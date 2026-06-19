@@ -1,0 +1,245 @@
+{
+  "schemaVersion": "1.0.0",
+  "metadata": {
+    "projectName": "Vaishnav Villa",
+    "projectCode": "VAV 567",
+    "locality": "SUDA Garden",
+    "drawingTitle": "Residential Plotting Layout",
+    "unit": "m",
+    "currency": "INR",
+    "northRotation": 0,
+    "bounds": [-22, -20, 28, 66],
+    "createdAt": "2026-06-16T00:00:00.000Z",
+    "updatedAt": "2026-06-16T00:00:00.000Z"
+  },
+  "defaults": {
+    "plotExtrudeHeight": 0.15,
+    "wallHeight": 2.4,
+    "wallThickness": 0.23,
+    "roadSurface": "asphalt",
+    "treeHeight": 5,
+    "treeCanopyRadius": 2.5,
+    "statusColors": {
+      "available": "#22c55e",
+      "reserved": "#f59e0b",
+      "sold": "#ef4444",
+      "not-for-sale": "#6b7280"
+    }
+  },
+  "plots": [
+    {
+      "id": "plot-01",
+      "number": 1,
+      "polygon": [[0, 0], [-13.691, 0], [-13.691, 3.048], [-15.52, 3.048], [-16.028, 9.043], [0, 9.043]],
+      "area": 1450,
+      "status": "available",
+      "facing": "E",
+      "dimensions": { "front": "50'-11\"", "back": "52'-7\"", "depth": "29'-8\"" },
+      "edgeLabels": ["50'-11\"", "10'", "6'", "23'-1\"", "52'-7\"", "29'-8\""]
+    },
+    {
+      "id": "plot-02",
+      "number": 2,
+      "polygon": [[0, 9.043], [0, 13.31], [-15.236, 13.31], [-16.028, 9.043]],
+      "area": 736,
+      "status": "sold",
+      "facing": "E",
+      "dimensions": { "front": "52'-7\"", "back": "50'", "depth": "14'" }
+    },
+    {
+      "id": "plot-03",
+      "number": 3,
+      "polygon": [[0, 13.31], [0, 17.577], [-14.444, 17.577], [-15.236, 13.31]],
+      "area": 700,
+      "status": "available",
+      "facing": "E",
+      "dimensions": { "front": "50'", "back": "47'-5\"", "depth": "14'" }
+    },
+    {
+      "id": "plot-04",
+      "number": 4,
+      "polygon": [[0, 17.577], [0, 21.844], [-13.653, 21.844], [-14.444, 17.577]],
+      "area": 664,
+      "status": "reserved",
+      "facing": "E",
+      "dimensions": { "front": "47'-5\"", "back": "44'-10\"", "depth": "14'" }
+    },
+    {
+      "id": "plot-05",
+      "number": 5,
+      "polygon": [[0, 21.844], [0, 26.111], [-12.861, 26.111], [-13.653, 21.844]],
+      "area": 628,
+      "status": "available",
+      "facing": "E",
+      "dimensions": { "front": "44'-10\"", "back": "42'-3\"", "depth": "14'" }
+    },
+    {
+      "id": "plot-06",
+      "number": 6,
+      "polygon": [[0, 26.111], [0, 30.378], [-12.069, 30.378], [-12.861, 26.111]],
+      "area": 592,
+      "status": "sold",
+      "facing": "E",
+      "dimensions": { "front": "42'-3\"", "back": "39'-8\"", "depth": "14'" }
+    },
+    {
+      "id": "plot-07",
+      "number": 7,
+      "polygon": [[0, 30.378], [0, 34.645], [-11.278, 34.645], [-12.069, 30.378]],
+      "area": 536,
+      "status": "available",
+      "facing": "E",
+      "dimensions": { "front": "39'-8\"", "back": "37'", "depth": "14'" }
+    },
+    {
+      "id": "plot-08",
+      "number": 8,
+      "polygon": [[6.706, 30.303], [20.117, 30.303], [20.117, 34.265], [6.706, 34.265]],
+      "area": 572,
+      "status": "available",
+      "facing": "W",
+      "dimensions": { "front": "44'", "back": "44'", "depth": "13'" }
+    },
+    {
+      "id": "plot-09",
+      "number": 9,
+      "polygon": [[6.706, 26.34], [20.117, 26.34], [20.117, 30.303], [6.706, 30.303]],
+      "area": 572,
+      "status": "reserved",
+      "facing": "W",
+      "dimensions": { "front": "44'", "back": "44'", "depth": "13'" }
+    },
+    {
+      "id": "plot-10",
+      "number": 10,
+      "polygon": [[6.706, 22.225], [20.117, 22.225], [20.117, 26.34], [6.706, 26.34]],
+      "area": 594,
+      "status": "sold",
+      "facing": "W",
+      "dimensions": { "front": "44'", "back": "44'", "depth": "13'-6\"" }
+    },
+    {
+      "id": "plot-11",
+      "number": 11,
+      "polygon": [[6.706, 18.11], [20.117, 18.11], [20.117, 22.225], [6.706, 22.225]],
+      "area": 594,
+      "status": "available",
+      "facing": "W",
+      "dimensions": { "front": "44'", "back": "44'", "depth": "13'-6\"" }
+    },
+    {
+      "id": "plot-12",
+      "number": 12,
+      "polygon": [[6.706, 13.996], [20.117, 13.996], [20.117, 18.11], [6.706, 18.11]],
+      "area": 594,
+      "status": "available",
+      "facing": "W",
+      "dimensions": { "front": "44'", "back": "44'", "depth": "13'-6\"" }
+    },
+    {
+      "id": "plot-13",
+      "number": 13,
+      "polygon": [[6.706, 9.881], [20.117, 9.881], [20.117, 13.996], [6.706, 13.996]],
+      "area": 594,
+      "status": "reserved",
+      "facing": "W",
+      "dimensions": { "front": "44'", "back": "44'", "depth": "13'-6\"" }
+    },
+    {
+      "id": "plot-14",
+      "number": 14,
+      "polygon": [[6.706, 0], [20.117, 0.813], [20.117, 9.881], [6.706, 9.881]],
+      "area": 1364,
+      "status": "available",
+      "facing": "W",
+      "dimensions": { "front": "44'", "back": "44'", "depth": "32'-5\"" },
+      "edgeLabels": [null, "29'-9\"", "44'", "32'-5\""]
+    }
+  ],
+  "roads": [
+    {
+      "id": "road-internal-1",
+      "name": "22 FT Wide Road",
+      "kind": "internal",
+      "polygon": [[0, 0], [6.706, 0], [6.706, 34.265], [0, 34.645]],
+      "width": { "value": 6.706, "raw": "22 FT" },
+      "surface": "asphalt"
+    },
+    {
+      "id": "road-main-1",
+      "name": "18 MT Wide Road",
+      "kind": "main",
+      "polygon": [[-22, -19.5], [28, -19.5], [28, -1.5], [-22, -1.5]],
+      "width": { "value": 18, "raw": "18 MT" },
+      "surface": "asphalt"
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "wall-perimeter",
+      "kind": "wall",
+      "path": [[0, 0], [-15.52, 0], [-16.028, 9.043], [-11.278, 34.645], [20.117, 34.265], [20.117, 0.813], [6.706, 0]],
+      "closed": false,
+      "height": 2.4,
+      "thickness": 0.23
+    },
+    {
+      "id": "gate-main",
+      "kind": "gate",
+      "path": [[0, 0], [6.706, 0]],
+      "closed": false,
+      "height": 2.4
+    }
+  ],
+  "trees": [
+    { "id": "tree-01", "kind": "tree", "position": [-18, 4] },
+    { "id": "tree-02", "kind": "tree", "position": [-18.5, 12] },
+    { "id": "tree-03", "kind": "tree", "position": [-19, 20] },
+    { "id": "tree-04", "kind": "tree", "position": [-19.5, 28] },
+    { "id": "tree-05", "kind": "palm", "position": [-19, 34], "height": 7 },
+    { "id": "tree-06", "kind": "tree", "position": [22, 4] },
+    { "id": "tree-07", "kind": "tree", "position": [22.5, 12] },
+    { "id": "tree-08", "kind": "tree", "position": [23, 20] },
+    { "id": "tree-09", "kind": "tree", "position": [23.5, 28] },
+    { "id": "tree-10", "kind": "palm", "position": [23, 34], "height": 7 }
+  ],
+  "openSpaces": [
+    {
+      "id": "os-suda",
+      "label": "SUDA GARDEN",
+      "polygon": [[-11.278, 34.645], [20.117, 34.265], [20.117, 62], [-11.278, 62]],
+      "area": 968,
+      "usage": "garden"
+    },
+    {
+      "id": "os-01",
+      "label": "O.S.",
+      "polygon": [[-15.52, 0], [-13.691, 0], [-13.691, 3.048], [-15.52, 3.048]],
+      "area": 60,
+      "size": "6' x 10'",
+      "edgeLabels": ["6'", "10'", null, null],
+      "usage": "utility",
+      "selectable": true
+    }
+  ],
+  "labels": [
+    { "id": "lbl-p1", "kind": "plot-number", "text": "1", "at": [-7.0, 4.8], "refId": "plot-01" },
+    { "id": "lbl-p2", "kind": "plot-number", "text": "2", "at": [-7.82, 11.18], "refId": "plot-02" },
+    { "id": "lbl-p3", "kind": "plot-number", "text": "3", "at": [-7.42, 15.44], "refId": "plot-03" },
+    { "id": "lbl-p4", "kind": "plot-number", "text": "4", "at": [-7.02, 19.71], "refId": "plot-04" },
+    { "id": "lbl-p5", "kind": "plot-number", "text": "5", "at": [-6.63, 23.98], "refId": "plot-05" },
+    { "id": "lbl-p6", "kind": "plot-number", "text": "6", "at": [-6.23, 28.24], "refId": "plot-06" },
+    { "id": "lbl-p7", "kind": "plot-number", "text": "7", "at": [-5.84, 32.51], "refId": "plot-07" },
+    { "id": "lbl-p8", "kind": "plot-number", "text": "8", "at": [13.41, 32.28], "refId": "plot-08" },
+    { "id": "lbl-p9", "kind": "plot-number", "text": "9", "at": [13.41, 28.32], "refId": "plot-09" },
+    { "id": "lbl-p10", "kind": "plot-number", "text": "10", "at": [13.41, 24.28], "refId": "plot-10" },
+    { "id": "lbl-p11", "kind": "plot-number", "text": "11", "at": [13.41, 20.17], "refId": "plot-11" },
+    { "id": "lbl-p12", "kind": "plot-number", "text": "12", "at": [13.41, 16.05], "refId": "plot-12" },
+    { "id": "lbl-p13", "kind": "plot-number", "text": "13", "at": [13.41, 11.94], "refId": "plot-13" },
+    { "id": "lbl-p14", "kind": "plot-number", "text": "14", "at": [13.41, 5.14], "refId": "plot-14" },
+    { "id": "lbl-suda", "kind": "open-space", "text": "SUDA GARDEN", "at": [4.4, 42], "refId": "os-suda" },
+    { "id": "lbl-os", "kind": "open-space", "text": "O.S.", "at": [-14.6, 1.5], "refId": "os-01" },
+    { "id": "lbl-road-22", "kind": "road-name", "text": "22 FT ROAD", "at": [3.35, 17], "rotation": 90, "refId": "road-internal-1" },
+    { "id": "lbl-road-18", "kind": "road-name", "text": "18 M ROAD", "at": [3, -10], "rotation": 0, "refId": "road-main-1" }
+  ]
+}

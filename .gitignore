@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Production build
+build/
+dist/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Environment variables (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Logs & debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Cursor
+.cursor/
+
+# Vercel / hosting local config
+.vercel
+
+# Test coverage
+coverage/
+
+# Optional: uncomment if you use Git LFS for GLB models instead of committing them directly
+# public/models/required/**/*.glb
