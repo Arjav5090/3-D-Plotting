@@ -170,6 +170,17 @@ export function grassMapsForArea(width: number, depth: number): GrassMaps {
   return { map, normalMap };
 }
 
+/** World-aligned UVs already encode metres / TILE_METRES — keep repeat at 1. */
+export function grassMapsWorldAligned(): GrassMaps {
+  const map = getGrassColorMap().clone();
+  const normalMap = getGrassNormalMap().clone();
+  map.repeat.set(1, 1);
+  normalMap.repeat.set(1, 1);
+  map.needsUpdate = true;
+  normalMap.needsUpdate = true;
+  return { map, normalMap };
+}
+
 /** World-aligned UVs so irregular plot shapes tile evenly. */
 export function applyWorldGrassUVs(
   geometry: THREE.BufferGeometry,

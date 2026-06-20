@@ -14,6 +14,7 @@ import { LoadingBridge } from "@/rendering/LoadingBridge";
 import "@/rendering/models/assetPaths";
 import { useSelectionStore } from "@/store/useSelectionStore";
 import { useViewStore } from "@/store/useViewStore";
+import { useViewportProfile } from "@/hooks/useViewportProfile";
 
 /** Empty click: deselect and return the camera to the master plan view. */
 function handleMissed() {
@@ -24,32 +25,34 @@ function handleMissed() {
 }
 
 export function SiteViewer() {
+  const { isMobile, isLowPower } = useViewportProfile();
+
   return (
     <Canvas
-      shadows
-      dpr={[1, 2]}
+      className="absolute inset-0 touch-none"
+      shadows={!isLowPower}
+      dpr={isLowPower ? [1, 1.25] : [1, 2]}
       gl={{
-        antialias: true,
+        antialias: !isLowPower,
         alpha: true,
+        powerPreference: "high-performance",
         toneMapping: ACESFilmicToneMapping,
         toneMappingExposure: 1.05,
       }}
-      // Transparent canvas so the page's grey-blue gradient shows through as a
-      // clean architectural presentation board (no skybox / HDRI sky).
-      camera={{ fov: 45, position: [60, 60, 60], near: 0.1, far: 5000 }}
-      // Fires on a genuine click that hit no interactive object (plots only),
-      // NOT on orbit drags — so selection persists during camera movement.
+      camera={{ fov: isMobile ? 48 : 45, position: [60, 60, 60], near: 0.1, far: 5000 }}
       onPointerMissed={handleMissed}
     >
       <LoadingBridge />
       <Suspense fallback={null}>
-        <SiteRenderer />
+        <SiteRenderer lowPower={isLowPower} />
       </Suspense>
       <OrbitControls
         makeDefault
         enableDamping
         dampingFactor={0.08}
-        // Mobile: one finger orbits, two fingers dolly + pan.
+        rotateSpeed={isMobile ? 0.65 : 1}
+        zoomSpeed={isMobile ? 0.75 : 1}
+        panSpeed={isMobile ? 0.65 : 1}
         touches={{ ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN }}
         mouseButtons={{
           LEFT: MOUSE.ROTATE,

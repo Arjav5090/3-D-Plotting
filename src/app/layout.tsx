@@ -1,13 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Vaishnav Villa — 3D Plotting Viewer",
   description: "Interactive 3D visualization of the residential plotting layout.",
-  icons: {
-    icon: "/branding/sahaj-group.png",
-    apple: "/branding/sahaj-group.png",
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#8fa3b0",
 };
 
 export default function RootLayout({

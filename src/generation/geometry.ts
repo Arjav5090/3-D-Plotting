@@ -22,6 +22,44 @@ export function shapeFromPolygon(ring: PolygonRing): THREE.Shape {
   return shape;
 }
 
+/** Circular hole for grass cut-outs (clockwise winding for THREE.Shape holes). */
+export function circleHolePath(
+  cx: number,
+  cy: number,
+  radius: number,
+  segments = 40,
+): THREE.Path {
+  const path = new THREE.Path();
+  for (let i = 0; i <= segments; i++) {
+    const theta = (-i / segments) * Math.PI * 2;
+    const x = cx + Math.cos(theta) * radius;
+    const y = cy + Math.sin(theta) * radius;
+    if (i === 0) path.moveTo(x, y);
+    else path.lineTo(x, y);
+  }
+  return path;
+}
+
+/**
+ * Flat ground cap with optional circular holes (e.g. fountain plaza cut-outs).
+ */
+export function createGroundCapGeometryWithHoles(
+  ring: PolygonRing,
+  holes: Array<{ cx: number; cy: number; r: number }>,
+  uv?: (geo: THREE.BufferGeometry) => void,
+): THREE.BufferGeometry {
+  const shape = shapeFromPolygon(ring);
+  for (const hole of holes) {
+    shape.holes.push(circleHolePath(hole.cx, hole.cy, hole.r));
+  }
+  const shaped = new THREE.ShapeGeometry(shape);
+  shaped.rotateX(-Math.PI / 2);
+  const geo = mergeVertices(shaped);
+  geo.computeVertexNormals();
+  uv?.(geo);
+  return geo;
+}
+
 /**
  * Flat ground-facing cap geometry with welded vertices so internal
  * triangulation edges do not show as shading seams on the surface.

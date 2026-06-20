@@ -46,10 +46,13 @@ export function Curbs({ road }: CurbsProps) {
         position: [cx, y, -(minY + CURB_W / 2)],
         size: [w, CURB_H, CURB_W],
       });
-      out.push({
-        position: [cx, y, -(maxY - CURB_W / 2)],
-        size: [w, CURB_H, CURB_W],
-      });
+      // Main road north edge meets the compound wall/gate — no kerb there.
+      if (road.id !== "road-main-1") {
+        out.push({
+          position: [cx, y, -(maxY - CURB_W / 2)],
+          size: [w, CURB_H, CURB_W],
+        });
+      }
     } else {
       out.push({
         position: [minX + CURB_W / 2, y, -cy],

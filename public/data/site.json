@@ -8,7 +8,7 @@
     "unit": "m",
     "currency": "INR",
     "northRotation": 0,
-    "bounds": [-22, -20, 28, 66],
+    "bounds": [-22, -20, 28, 62],
     "createdAt": "2026-06-16T00:00:00.000Z",
     "updatedAt": "2026-06-16T00:00:00.000Z"
   },
@@ -161,7 +161,7 @@
       "id": "road-internal-1",
       "name": "22 FT Wide Road",
       "kind": "internal",
-      "polygon": [[0, 0], [6.706, 0], [6.706, 34.265], [0, 34.645]],
+      "polygon": [[0, -0.12], [6.706, -0.12], [6.706, 34.265], [0, 34.645]],
       "width": { "value": 6.706, "raw": "22 FT" },
       "surface": "asphalt"
     },
@@ -169,7 +169,7 @@
       "id": "road-main-1",
       "name": "18 MT Wide Road",
       "kind": "main",
-      "polygon": [[-22, -19.5], [28, -19.5], [28, -1.5], [-22, -1.5]],
+      "polygon": [[-22, -19.5], [28, -19.5], [28, 0.96], [20.117, 0.96], [6.706, 0.15], [-22, 0.15]],
       "width": { "value": 18, "raw": "18 MT" },
       "surface": "asphalt"
     }
@@ -207,8 +207,8 @@
     {
       "id": "os-suda",
       "label": "SUDA GARDEN",
-      "polygon": [[-11.278, 34.645], [20.117, 34.265], [20.117, 62], [-11.278, 62]],
-      "area": 968,
+      "polygon": [[-11.278, 58.265], [27.4, 58.265], [27.4, 0.96], [20.117, 0.96], [20.117, 34.265], [-11.278, 34.645]],
+      "area": 1280,
       "usage": "garden"
     },
     {
@@ -237,9 +237,9 @@
     { "id": "lbl-p12", "kind": "plot-number", "text": "12", "at": [13.41, 16.05], "refId": "plot-12" },
     { "id": "lbl-p13", "kind": "plot-number", "text": "13", "at": [13.41, 11.94], "refId": "plot-13" },
     { "id": "lbl-p14", "kind": "plot-number", "text": "14", "at": [13.41, 5.14], "refId": "plot-14" },
-    { "id": "lbl-suda", "kind": "open-space", "text": "SUDA GARDEN", "at": [4.4, 42], "refId": "os-suda" },
+    { "id": "lbl-suda", "kind": "open-space", "text": "SUDA GARDEN", "at": [4.4, 46], "refId": "os-suda" },
     { "id": "lbl-os", "kind": "open-space", "text": "O.S.", "at": [-14.6, 1.5], "refId": "os-01" },
-    { "id": "lbl-road-22", "kind": "road-name", "text": "22 FT ROAD", "at": [3.35, 17], "rotation": 90, "refId": "road-internal-1" },
+    { "id": "lbl-road-22", "kind": "road-name", "text": "22 FT ROAD", "at": [4.95, 12.5], "rotation": 90, "refId": "road-internal-1" },
     { "id": "lbl-road-18", "kind": "road-name", "text": "18 M ROAD", "at": [3, -10], "rotation": 0, "refId": "road-main-1" }
   ]
 }

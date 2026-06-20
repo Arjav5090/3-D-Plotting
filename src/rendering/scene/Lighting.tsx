@@ -12,10 +12,13 @@
 interface LightingProps {
   /** Max site dimension, used to size the shadow camera frustum. */
   radius: number;
+  /** Use lighter shadow settings on phones/tablets. */
+  lowPower?: boolean;
 }
 
-export function Lighting({ radius }: LightingProps) {
+export function Lighting({ radius, lowPower = false }: LightingProps) {
   const d = radius * 1.2;
+  const shadowMap = lowPower ? 1024 : 2048;
 
   return (
     <>
@@ -29,9 +32,9 @@ export function Lighting({ radius }: LightingProps) {
         position={[radius * 0.8, radius * 1.4, radius * 0.9]}
         intensity={2.1}
         color="#fff3e0"
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        castShadow={!lowPower}
+        shadow-mapSize-width={shadowMap}
+        shadow-mapSize-height={shadowMap}
         shadow-bias={-0.0002}
         shadow-normalBias={0.04}
         shadow-camera-near={1}

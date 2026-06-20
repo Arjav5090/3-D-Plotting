@@ -12,10 +12,12 @@
 import { useMemo } from "react";
 import { Environment } from "@react-three/drei";
 import { getSiteBounds } from "@/generation/geometry";
+import { extendedMainRoadPolygon } from "@/generation/roadGeometry";
 import { useSiteData } from "@/data/loaders/useSiteData";
 import { PlotMesh } from "@/rendering/objects/PlotMesh";
 import { OpenSpaceMesh } from "@/rendering/objects/OpenSpaceMesh";
 import { RoadMesh } from "@/rendering/objects/RoadMesh";
+import { RoadGateApron } from "@/rendering/objects/RoadGateApron";
 import { RoadMarkings } from "@/rendering/objects/RoadMarkings";
 import { Curbs } from "@/rendering/objects/Curbs";
 import { BoundaryMesh } from "@/rendering/objects/BoundaryMesh";
@@ -23,16 +25,20 @@ import { BoundaryWallSystem } from "@/rendering/objects/BoundaryWallSystem";
 import { EntranceGate } from "@/rendering/objects/EntranceGate";
 import { GardenArea } from "@/rendering/objects/GardenArea";
 import { Trees } from "@/rendering/objects/Trees";
+import { Bushes } from "@/rendering/objects/Bushes";
 import { Cars } from "@/rendering/objects/Cars";
 import { FlatPolygonMesh } from "@/rendering/objects/FlatPolygonMesh";
 import { FlatLabel } from "@/rendering/labels/FlatLabel";
 import { ShadowCatcher } from "@/rendering/scene/Ground";
 import { Lighting } from "@/rendering/scene/Lighting";
 import { CameraController, type Landmarks } from "@/rendering/camera/CameraController";
+import { CompassSync } from "@/rendering/camera/CompassSync";
 import { PALETTE } from "@/rendering/materials/colors";
+import { useViewportProfile } from "@/hooks/useViewportProfile";
 
-export function SiteRenderer() {
+export function SiteRenderer({ lowPower = false }: { lowPower?: boolean }) {
   const { data } = useSiteData();
+  const { isMobile } = useViewportProfile();
 
   const bounds = useMemo(() => (data ? getSiteBounds(data) : null), [data]);
 
@@ -75,10 +81,12 @@ export function SiteRenderer() {
 
   const [cx, cy] = bounds.center;
   const radius = Math.max(bounds.size[0], bounds.size[1]);
+  const wall = data.boundaries.find((b) => b.id === "wall-perimeter");
+  const gate = data.boundaries.find((b) => b.kind === "gate");
 
   return (
     <>
-      <Lighting radius={radius} />
+      <Lighting radius={radius} lowPower={lowPower} />
       {/* HDRI used for soft reflections/IBL only — never shown as a sky. */}
       <Environment preset="park" background={false} />
       <ShadowCatcher size={bounds.size} />
@@ -87,6 +95,7 @@ export function SiteRenderer() {
         plots={data.plots}
         landmarks={landmarks}
       />
+      <CompassSync />
 
       {/* Center the whole site at the origin. world z = -y, so add +cy. */}
       <group position={[-cx, 0, cy]}>
@@ -106,7 +115,15 @@ export function SiteRenderer() {
         )}
 
         {data.roads.map((road) => (
-          <RoadMesh key={road.id} road={road} />
+          <RoadMesh
+            key={road.id}
+            road={road}
+            polygon={
+              road.id === "road-main-1"
+                ? extendedMainRoadPolygon(road, wall, gate)
+                : undefined
+            }
+          />
         ))}
 
         {data.roads.map((road) => (
@@ -118,11 +135,14 @@ export function SiteRenderer() {
         ))}
 
         {data.plots.map((plot) => (
-          <PlotMesh key={plot.id} plot={plot} defaults={data.defaults} />
+          <PlotMesh
+            key={plot.id}
+            plot={plot}
+            defaults={data.defaults}
+            labelScale={isMobile ? 1.22 : 1}
+          />
         ))}
 
-        {/* Compound wall: GLB modules tiled along each wall boundary. Other
-            non-gate boundaries (e.g. fences) fall back to the box wall. */}
         {data.boundaries
           .filter((b) => b.kind !== "gate")
           .map((b) =>
@@ -143,7 +163,11 @@ export function SiteRenderer() {
             />
           ))}
 
+        <RoadGateApron wall={wall} gate={gate} />
+
         <Trees data={data} />
+
+        <Bushes data={data} />
 
         <Cars />
 
@@ -162,7 +186,16 @@ export function SiteRenderer() {
               key={label.id}
               label={label}
               color={label.kind === "road-name" ? PALETTE.roadMarking : "#1f3d2a"}
-              fontSize={label.kind === "road-name" ? 1.6 : 1.9}
+              fontSize={
+                label.kind === "road-name"
+                  ? isMobile
+                    ? 1.85
+                    : 1.6
+                  : isMobile
+                    ? 2.1
+                    : 1.9
+              }
+              y={label.id === "lbl-road-22" ? 0.058 : 0.05}
             />
           ))}
       </group>

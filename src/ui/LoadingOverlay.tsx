@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BrandHeader } from "@/ui/BrandHeader";
-import { PoweredBy } from "@/ui/PoweredBy";
 import {
   computeLoadingProgress,
   selectIsAppLoading,
@@ -54,7 +53,6 @@ export function LoadingOverlay() {
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         >
           <BrandHeader />
-          <PoweredBy />
 
           <div className="flex max-w-md flex-col items-center gap-5 px-8 text-center">
             <motion.div

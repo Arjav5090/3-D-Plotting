@@ -33,6 +33,8 @@ import { useViewStore } from "@/store/useViewStore";
 interface PlotMeshProps {
   plot: Plot;
   defaults?: SiteDefaults;
+  /** Scales edge-dimension text for small screens (never hides labels). */
+  labelScale?: number;
 }
 
 const LERP_SPEED = 9;
@@ -42,7 +44,7 @@ const COLOR_BASE = new THREE.Color(PLOT_COLORS.base);
 const COLOR_HOVER = new THREE.Color(PLOT_COLORS.hover);
 const COLOR_SELECTED = new THREE.Color(PLOT_COLORS.selected);
 
-export function PlotMesh({ plot, defaults }: PlotMeshProps) {
+export function PlotMesh({ plot, defaults, labelScale = 1 }: PlotMeshProps) {
   const depth =
     plot.building?.heightOverride ?? defaults?.plotExtrudeHeight ?? 0.15;
 
@@ -79,11 +81,19 @@ export function PlotMesh({ plot, defaults }: PlotMeshProps) {
   );
 
   const numberSize = useMemo(
-    () => plotNumberSize(footprint.w, footprint.d),
-    [footprint.w, footprint.d],
+    () => plotNumberSize(footprint.w, footprint.d) * labelScale,
+    [footprint.w, footprint.d, labelScale],
   );
 
-  const edgeLabels = useMemo(() => plotEdgePlacements(plot), [plot]);
+  const edgeLabels = useMemo(
+    () =>
+      plotEdgePlacements(plot).map((p) => ({
+        ...p,
+        fontSize: p.fontSize * labelScale,
+        maxWidth: p.maxWidth * labelScale,
+      })),
+    [plot, labelScale],
+  );
 
   useEffect(() => () => bodyGeometry.dispose(), [bodyGeometry]);
   useEffect(() => () => topGeometry.dispose(), [topGeometry]);
@@ -199,7 +209,11 @@ export function PlotMesh({ plot, defaults }: PlotMeshProps) {
 
       <PolygonBorderLoop polygon={plot.polygon} y={borderY} />
 
-      <EdgeDimensionLabels placements={edgeLabels} surfaceY={labelY3} />
+      <EdgeDimensionLabels
+        placements={edgeLabels}
+        surfaceY={labelY3}
+        outlineWidth={0.035 * labelScale}
+      />
 
       <SurfaceSizeLabels
         x={labelX}

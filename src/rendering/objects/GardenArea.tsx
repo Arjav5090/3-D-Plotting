@@ -1,16 +1,18 @@
 "use client";
 
 /**
- * SUDA Garden — follows the slanted compound north wall, extended northward.
+ * SUDA Garden — L-shaped lawn (north plaza + east boulevard to main road).
+ * Fountain plaza, winding paths, lamps, pots, bushes, palms, and flower beds.
  */
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import type { PolygonRing } from "@/domain/types/site";
-import { createGroundCapGeometry } from "@/generation/geometry";
-import { PALETTE } from "@/rendering/materials/colors";
-import { applyWorldGrassUVs, grassMapsForArea } from "@/rendering/materials/grassTexture";
+import { createGroundCapGeometryWithHoles } from "@/generation/geometry";
+import { buildGardenLayout, type PathSlab } from "@/generation/gardenLayout";
+import { PALETTE, PLOT_COLORS } from "@/rendering/materials/colors";
+import { applyWorldGrassUVs, grassMapsWorldAligned } from "@/rendering/materials/grassTexture";
 import { ASSETS } from "@/rendering/models/assetPaths";
-import { GlbProp, InstancedGlb, type Placement2D } from "@/rendering/objects/GlbModel";
+import { GlbProp, InstancedGlb } from "@/rendering/objects/GlbModel";
 
 interface GardenAreaProps {
   polygon: PolygonRing;
@@ -19,44 +21,31 @@ interface GardenAreaProps {
 const noRaycast = () => null;
 const GRASS_Y = 0.11;
 const PATH_Y = 0.15;
+const PLAZA_Y = 0.13;
+
+function PathSlabMesh({ slab }: { slab: PathSlab }) {
+  return (
+    <mesh position={[slab.cx, PATH_Y, -slab.cy]} receiveShadow raycast={noRaycast}>
+      <boxGeometry args={[slab.w, 0.06, slab.d]} />
+      <meshStandardMaterial color={PALETTE.gardenPath} roughness={1} />
+    </mesh>
+  );
+}
 
 export function GardenArea({ polygon }: GardenAreaProps) {
-  const box = useMemo(() => {
-    let minX = Infinity;
-    let minY = Infinity;
-    let maxX = -Infinity;
-    let maxY = -Infinity;
-    for (const [x, y] of polygon) {
-      if (x < minX) minX = x;
-      if (y < minY) minY = y;
-      if (x > maxX) maxX = x;
-      if (y > maxY) maxY = y;
-    }
-    return {
-      cx: (minX + maxX) / 2,
-      cy: (minY + maxY) / 2,
-      minX,
-      minY,
-      maxX,
-      maxY,
-      W: maxX - minX,
-      D: maxY - minY,
-    };
-  }, [polygon]);
-
-  const { cx, cy, minX, minY, maxX, maxY, W, D } = box;
-  const pathW = Math.min(W, D) * 0.09;
-  const fountainR = Math.min(W, D) * 0.1;
-  const inset = Math.min(W, D) * 0.1;
-  const loopHalfW = W / 2 - inset;
-  const loopHalfD = D / 2 - inset;
+  const layout = useMemo(() => buildGardenLayout(polygon), [polygon]);
+  const { north, east } = layout;
 
   const grassGeometry = useMemo(() => {
-    const geo = createGroundCapGeometry(polygon, applyWorldGrassUVs);
+    const geo = createGroundCapGeometryWithHoles(
+      polygon,
+      [{ cx: north.cx, cy: north.cy, r: north.fountainPadR }],
+      applyWorldGrassUVs,
+    );
     return geo;
-  }, [polygon]);
+  }, [polygon, north.cx, north.cy, north.fountainPadR]);
 
-  const grassMaps = useMemo(() => grassMapsForArea(W, D), [W, D]);
+  const grassMaps = useMemo(() => grassMapsWorldAligned(), []);
 
   useEffect(() => () => grassGeometry.dispose(), [grassGeometry]);
   useEffect(
@@ -67,46 +56,35 @@ export function GardenArea({ polygon }: GardenAreaProps) {
     [grassMaps],
   );
 
-  const benches = useMemo<Placement2D[]>(
-    () => [
-      { x: cx, y: cy - fountainR - pathW - 1.2, rotationY: 0 },
-      { x: cx, y: cy + fountainR + pathW + 1.2, rotationY: Math.PI },
-    ],
-    [cx, cy, fountainR, pathW],
+  const allLamps = useMemo(
+    () => [...north.lamps, ...east.lamps],
+    [north.lamps, east.lamps],
+  );
+  const allPots = useMemo(
+    () => [...north.pots, ...east.pots],
+    [north.pots, east.pots],
+  );
+  const allBushes = useMemo(
+    () => [...north.bushes, ...east.bushes],
+    [north.bushes, east.bushes],
+  );
+  const allBenches = useMemo(
+    () => [...north.benches, ...east.benches],
+    [north.benches, east.benches],
+  );
+  const allTrees = useMemo(
+    () => [...north.trees, ...east.trees],
+    [north.trees, east.trees],
+  );
+  const allFlowerBeds = useMemo(
+    () => [...north.flowerBeds, ...east.flowerBeds],
+    [north.flowerBeds, east.flowerBeds],
   );
 
-  const lamps = useMemo<Placement2D[]>(
-    () => [
-      { x: cx - loopHalfW, y: cy - loopHalfD, rotationY: 0 },
-      { x: cx + loopHalfW, y: cy - loopHalfD, rotationY: 0 },
-      { x: cx - loopHalfW, y: cy + loopHalfD, rotationY: 0 },
-      { x: cx + loopHalfW, y: cy + loopHalfD, rotationY: 0 },
-    ],
-    [cx, cy, loopHalfW, loopHalfD],
-  );
-
-  const flowerBeds = useMemo<Placement2D[]>(() => {
-    const qx = W * 0.3;
-    const qz = D * 0.28;
-    return [
-      { x: cx - qx, y: cy - qz, rotationY: Math.PI / 6 },
-      { x: cx + qx, y: cy - qz, rotationY: -Math.PI / 6 },
-      { x: cx - qx, y: cy + qz, rotationY: -Math.PI / 6 },
-      { x: cx + qx, y: cy + qz, rotationY: Math.PI / 6 },
-    ];
-  }, [cx, cy, W, D]);
-
-  const gardenTrees = useMemo<Placement2D[]>(() => {
-    const mx = W * 0.42;
-    return [
-      { x: minX + 2.5, y: minY + 3, rotationY: 0.4, scale: 1.0 },
-      { x: maxX - 2.5, y: minY + 3, rotationY: 1.2, scale: 0.95 },
-      { x: minX + 2.5, y: maxY - 2.5, rotationY: 2.1, scale: 1.05 },
-      { x: maxX - 2.5, y: maxY - 2.5, rotationY: 2.8, scale: 1.0 },
-      { x: cx - mx, y: cy, rotationY: 0.8, scale: 0.9 },
-      { x: cx + mx, y: cy, rotationY: 1.9, scale: 0.9 },
-    ];
-  }, [cx, cy, minX, minY, maxX, maxY, W, D]);
+  const entrancePlazaCx = (east.wallX + east.eastX) / 2;
+  const entrancePlazaCy = east.roadY + 2.1;
+  const junctionY = north.cy - north.loopHalfD;
+  const junctionCx = east.pathCx;
 
   return (
     <group name="suda-garden">
@@ -115,46 +93,60 @@ export function GardenArea({ polygon }: GardenAreaProps) {
           map={grassMaps.map}
           normalMap={grassMaps.normalMap}
           normalScale={new THREE.Vector2(0.25, 0.25)}
-          color={PALETTE.grass}
+          color={PLOT_COLORS.base}
           roughness={0.92}
         />
       </mesh>
 
-      <mesh position={[cx, PATH_Y, -cy]} receiveShadow raycast={noRaycast}>
-        <boxGeometry args={[W - inset, 0.06, pathW]} />
-        <meshStandardMaterial color={PALETTE.gardenPath} roughness={1} />
+      {/* Fountain plaza — grass cut-out so the model is not clipped */}
+      <mesh
+        position={[north.cx, PLAZA_Y, -north.cy]}
+        receiveShadow
+        raycast={noRaycast}
+      >
+        <cylinderGeometry args={[north.fountainPadR, north.fountainPadR, 0.05, 40]} />
+        <meshStandardMaterial color={PALETTE.gardenPlaza} roughness={0.95} />
       </mesh>
-      <mesh position={[cx, PATH_Y, -cy]} receiveShadow raycast={noRaycast}>
-        <boxGeometry args={[pathW, 0.06, D - inset]} />
-        <meshStandardMaterial color={PALETTE.gardenPath} roughness={1} />
+
+      {/* East boulevard welcome plaza at the main road */}
+      <mesh
+        position={[entrancePlazaCx, PLAZA_Y, -entrancePlazaCy]}
+        receiveShadow
+        raycast={noRaycast}
+      >
+        <cylinderGeometry args={[2.8, 2.8, 0.05, 32]} />
+        <meshStandardMaterial color={PALETTE.gardenPlaza} roughness={0.95} />
       </mesh>
-      {[
-        { x: 0, z: -loopHalfD, w: loopHalfW * 2, d: pathW },
-        { x: 0, z: loopHalfD, w: loopHalfW * 2, d: pathW },
-        { x: -loopHalfW, z: 0, w: pathW, d: loopHalfD * 2 },
-        { x: loopHalfW, z: 0, w: pathW, d: loopHalfD * 2 },
-      ].map((s, i) => (
-        <mesh
-          key={`loop${i}`}
-          position={[cx + s.x, PATH_Y, -(cy + s.z)]}
-          receiveShadow
-          raycast={noRaycast}
-        >
-          <boxGeometry args={[s.w, 0.06, s.d]} />
-          <meshStandardMaterial color={PALETTE.gardenPath} roughness={1} />
-        </mesh>
+
+      {/* Junction plaza where east boulevard meets the north garden */}
+      <mesh
+        position={[junctionCx, PLAZA_Y, -junctionY]}
+        receiveShadow
+        raycast={noRaycast}
+      >
+        <cylinderGeometry args={[2.2, 2.2, 0.05, 32]} />
+        <meshStandardMaterial color={PALETTE.gardenPlaza} roughness={0.95} />
+      </mesh>
+
+      {north.paths.map((s, i) => (
+        <PathSlabMesh key={`np${i}`} slab={s} />
+      ))}
+      {east.paths.map((s, i) => (
+        <PathSlabMesh key={`ep${i}`} slab={s} />
       ))}
 
       <GlbProp
         url={ASSETS.fountain}
-        position={[cx, 0.18, -cy]}
-        targetHeight={fountainR * 2.2}
+        position={[north.cx, PLAZA_Y + 0.06, -north.cy]}
+        targetHeight={north.fountainR * 2.2}
       />
 
-      <InstancedGlb url={ASSETS.flowerBed} placements={flowerBeds} targetFootprint={W * 0.14} />
-      <InstancedGlb url={ASSETS.bench} placements={benches} targetFootprint={1.5} />
-      <InstancedGlb url={ASSETS.lampPost} placements={lamps} targetHeight={3.0} />
-      <InstancedGlb url={ASSETS.gardenTree} placements={gardenTrees} targetHeight={6} />
+      <InstancedGlb url={ASSETS.lowPolyPot} placements={allPots} targetFootprint={0.95} />
+      <InstancedGlb url={ASSETS.greenBush} placements={allBushes} targetFootprint={1.45} />
+      <InstancedGlb url={ASSETS.bench} placements={allBenches} targetFootprint={1.5} />
+      <InstancedGlb url={ASSETS.lampPost} placements={allLamps} targetHeight={3.0} />
+      <InstancedGlb url={ASSETS.gardenTree} placements={allTrees} targetHeight={5.5} />
+      <InstancedGlb url={ASSETS.flowerBed} placements={allFlowerBeds} targetFootprint={2.2} />
     </group>
   );
-};
+}

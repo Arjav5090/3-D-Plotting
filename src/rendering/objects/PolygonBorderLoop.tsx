@@ -1,34 +1,39 @@
 "use client";
 
 /**
- * Raised dark strips along every plot edge — visible plot separators (WebGL
- * lineLoop linewidth is ignored on most GPUs).
+ * Straight plot dividers only — horizontal / vertical internal lines.
+ * Skips slanted compound-wall edges on the back (west) side.
  */
 import { useMemo } from "react";
+import { Line } from "@react-three/drei";
 import type { PolygonRing } from "@/domain/types/site";
 import { PLOT_BORDER } from "@/rendering/materials/colors";
 
 interface PolygonBorderLoopProps {
   polygon: PolygonRing;
   y: number;
-  width?: number;
-  height?: number;
+  /** When true, slanted perimeter edges are omitted. */
+  straightOnly?: boolean;
 }
 
 const noRaycast = () => null;
+const AXIS_EPS = 0.35;
+
+function isAxisAligned(dx: number, dy: number, len: number): boolean {
+  if (len < 0.05) return false;
+  const nx = Math.abs(dx) / len;
+  const ny = Math.abs(dy) / len;
+  return nx < AXIS_EPS || ny < AXIS_EPS;
+}
 
 export function PolygonBorderLoop({
   polygon,
   y,
-  width = 0.09,
-  height = 0.04,
+  straightOnly = true,
 }: PolygonBorderLoopProps) {
-  const meshes = useMemo(() => {
-    const items: {
-      position: [number, number, number];
-      size: [number, number, number];
-      angle: number;
-    }[] = [];
+  const segments = useMemo(() => {
+    const out: { a: [number, number, number]; b: [number, number, number] }[] =
+      [];
 
     for (let i = 0; i < polygon.length; i++) {
       const [x1, y1] = polygon[i];
@@ -36,38 +41,29 @@ export function PolygonBorderLoop({
       const dx = x2 - x1;
       const dy = y2 - y1;
       const len = Math.hypot(dx, dy);
-      if (len < 0.05) continue;
+      if (straightOnly && !isAxisAligned(dx, dy, len)) continue;
 
-      items.push({
-        position: [(x1 + x2) / 2, y + height / 2, -(y1 + y2) / 2],
-        size: [len, height, width],
-        angle: Math.atan2(dy, dx),
+      out.push({
+        a: [x1, y, -y1],
+        b: [x2, y, -y2],
       });
     }
 
-    return items;
-  }, [polygon, y, width, height]);
+    return out;
+  }, [polygon, y, straightOnly]);
 
   return (
-    <group name="plot-border">
-      {meshes.map((m, i) => (
-        <mesh
+    <group name="plot-dividers">
+      {segments.map((s, i) => (
+        <Line
           key={i}
-          position={m.position}
-          rotation={[0, -m.angle, 0]}
+          points={[s.a, s.b]}
+          color={PLOT_BORDER}
+          lineWidth={1.8}
+          renderOrder={12}
           raycast={noRaycast}
-        >
-          <boxGeometry args={m.size} />
-          <meshStandardMaterial
-            color={PLOT_BORDER}
-            roughness={0.85}
-            metalness={0}
-            polygonOffset
-            polygonOffsetFactor={-4}
-            polygonOffsetUnits={-4}
-          />
-        </mesh>
+        />
       ))}
     </group>
   );
-};
+}

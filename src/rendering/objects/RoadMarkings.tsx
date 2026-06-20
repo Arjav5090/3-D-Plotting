@@ -66,9 +66,12 @@ export function RoadMarkings({ road }: RoadMarkingsProps) {
       const inset = 0.8;
       if (horizontal) {
         const e1 = -(minY + inset);
-        const e2 = -(maxY - inset);
         out.push({ position: [cx, Y, e1], size: [w - 1.0, MARK_W] });
-        out.push({ position: [cx, Y, e2], size: [w - 1.0, MARK_W] });
+        // North edge meets the compound wall — skip edge line there.
+        if (road.id !== "road-main-1") {
+          const e2 = -(maxY - inset);
+          out.push({ position: [cx, Y, e2], size: [w - 1.0, MARK_W] });
+        }
       } else {
         const e1 = minX + inset;
         const e2 = maxX - inset;

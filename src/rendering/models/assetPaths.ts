@@ -13,6 +13,8 @@ export const ASSETS = {
   carSedan: "/models/required/17-car_sedan/generic_sedan_car.glb",
   carSuv: "/models/required/18-car_suv/mmc_generic_small_suv_car.glb",
   carHatch: "/models/required/19-car_hatch/2016_volkswagen_polo.glb",
+  greenBush: "/models/required/20-green-bush/green_bush.glb",
+  lowPolyPot: "/models/required/21-low-poly-pot/low_poly_pot.glb",
 } as const;
 
 for (const url of Object.values(ASSETS)) {

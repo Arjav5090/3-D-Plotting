@@ -62,7 +62,7 @@ export function EntranceGate({ boundary, name }: EntranceGateProps) {
   const archPeak = PILLAR_TOP + archRadius;
   const lintelY = PILLAR_TOP - 0.25;
   const nameplateY = PILLAR_TOP + archRadius * 0.4;
-  const sideOffset = half + 2.8;
+  const sideOffset = half + 1.6;
 
   return (
     <group position={mid} rotation={[0, rotationY, 0]}>

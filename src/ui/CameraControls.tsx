@@ -42,8 +42,8 @@ export function CameraControls() {
   };
 
   return (
-    <div className="pointer-events-auto fixed bottom-4 left-1/2 z-20 -translate-x-1/2">
-      <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white/90 p-1 shadow-lg backdrop-blur">
+    <div className="pointer-events-auto fixed bottom-3 left-1/2 z-20 -translate-x-1/2 safe-bottom sm:bottom-4">
+      <div className="flex max-w-[calc(100vw-1rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-slate-200 bg-white/90 p-1 shadow-lg backdrop-blur sm:max-w-none sm:gap-1">
         {MODES.map(({ mode: m, label, icon }) => {
           const active = mode === m;
           const disabled = m === "focus" && !hasSelection;
@@ -53,8 +53,9 @@ export function CameraControls() {
               onClick={() => handleMode(m)}
               disabled={disabled}
               aria-pressed={active}
+              aria-label={label}
               className={[
-                "flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition sm:px-4",
+                "flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-sm font-medium transition sm:min-h-0 sm:min-w-0 sm:px-4 sm:py-2",
                 active
                   ? "bg-slate-900 text-white shadow"
                   : "text-slate-600 hover:bg-slate-100",
@@ -73,7 +74,8 @@ export function CameraControls() {
 
         <button
           onClick={reset}
-          className="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 sm:px-4"
+          aria-label="Reset camera"
+          className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 sm:min-h-0 sm:min-w-0 sm:px-4 sm:py-2"
           title="Reset camera"
         >
           <span aria-hidden className="text-base leading-none">

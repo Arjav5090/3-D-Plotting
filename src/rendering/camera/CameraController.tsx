@@ -21,6 +21,8 @@ import type { Plot } from "@/domain/types/site";
 import type { SiteBounds } from "@/generation/geometry";
 import { useViewStore } from "@/store/useViewStore";
 import { useSelectionStore } from "@/store/useSelectionStore";
+import { useViewportProfile } from "@/hooks/useViewportProfile";
+import { fitDistance } from "@/rendering/camera/cameraFit";
 
 const useViewStoreMode = () => useViewStore((s) => s.mode);
 const useViewStoreNonce = () => useViewStore((s) => s.resetNonce);
@@ -48,7 +50,9 @@ export function CameraController({
   landmarks,
 }: CameraControllerProps) {
   const camera = useThree((s) => s.camera);
+  const size = useThree((s) => s.size);
   const controls = useThree((s) => s.controls) as OrbitControlsImpl | null;
+  const { isMobile, isPortrait } = useViewportProfile();
 
   const mode = useViewStoreMode();
   const resetNonce = useViewStoreNonce();
@@ -93,36 +97,48 @@ export function CameraController({
     const fov = (camera.fov * Math.PI) / 180;
     const [w, d] = bounds.size;
     const maxDim = Math.max(w, d, 1);
-    const fitDist = maxDim / 2 / Math.tan(fov / 2);
+    const aspect = Math.max(size.width / Math.max(size.height, 1), 0.1);
+    const fitDist = fitDistance(w, d, fov, aspect);
+    const mobilePad = isMobile ? (isPortrait ? 1.62 : 1.38) : 1.22;
+    const uiLift = isMobile && isPortrait ? fitDist * 0.08 : fitDist * 0.03;
 
     let pos: THREE.Vector3;
     let tgt: THREE.Vector3;
 
     if (mode === "focus" && selectedPlotId && plotIndex.has(selectedPlotId)) {
-      const { world, size } = plotIndex.get(selectedPlotId)!;
-      const dist = (size / 2 / Math.tan(fov / 2)) * 2.6;
+      const { world, size: plotSize } = plotIndex.get(selectedPlotId)!;
+      const dist = fitDistance(plotSize, plotSize, fov, aspect) * (isMobile ? 3.1 : 2.6);
       tgt = world.clone();
       pos = new THREE.Vector3(
-        world.x + dist * 0.55,
-        dist * 0.7,
-        world.z + dist * 0.55,
+        world.x + dist * 0.45,
+        dist * 0.75,
+        world.z + dist * 1.0,
       );
     } else if (mode === "gate" && landmarks.gate) {
       const g = toWorld(landmarks.gate[0], landmarks.gate[1]);
-      // Front road is on the +Z (south) side; approach from there, low + close.
+      const gateDist = fitDistance(20, 16, fov, aspect) * (isMobile ? 1.22 : 1.05);
       tgt = new THREE.Vector3(g.x, 2.6, g.z);
-      pos = new THREE.Vector3(g.x + 3, 7, g.z + 24);
+      pos = new THREE.Vector3(
+        g.x + (isMobile ? 1.5 : 2.5),
+        isMobile ? 10 : 8,
+        g.z + gateDist,
+      );
     } else if (mode === "garden" && landmarks.garden) {
       const gc = toWorld(landmarks.garden.cx, landmarks.garden.cy);
-      const gMax = Math.max(landmarks.garden.w, landmarks.garden.d, 1);
-      const gDist = gMax / 2 / Math.tan(fov / 2);
-      tgt = gc.clone();
-      pos = new THREE.Vector3(gc.x, gDist * 0.7, gc.z + gDist * 0.95);
+      const gDist =
+        fitDistance(landmarks.garden.w, landmarks.garden.d, fov, aspect) *
+        (isMobile ? 1.42 : 1.18);
+      tgt = new THREE.Vector3(gc.x, 0, gc.z + uiLift * 0.35);
+      pos = new THREE.Vector3(gc.x + gDist * 0.04, gDist * 0.78, gc.z + gDist);
     } else {
-      // master plan: elevated, angled overview
-      const dist = fitDist * 1.25;
-      tgt = new THREE.Vector3(0, 0, 0);
-      pos = new THREE.Vector3(dist * 0.12, dist * 0.95, dist * 0.78);
+      const dist = fitDist * mobilePad;
+      tgt = new THREE.Vector3(0, 0, uiLift);
+      // Site north = world -Z — camera sits south (+Z) for north-up orientation.
+      pos = new THREE.Vector3(
+        dist * 0.04,
+        dist * (isMobile ? 0.86 : 0.8),
+        dist * (isMobile ? 1.1 : 1.04),
+      );
     }
 
     desiredPos.current.copy(pos);
@@ -143,6 +159,10 @@ export function CameraController({
     plotIndex,
     landmarks,
     toWorld,
+    size.width,
+    size.height,
+    isMobile,
+    isPortrait,
   ]);
 
   useFrame((_, delta) => {

@@ -5,8 +5,11 @@
 html,
 body {
   height: 100%;
+  min-height: 100dvh;
   margin: 0;
   padding: 0;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
 }
 
 :root {
@@ -16,6 +19,28 @@ body {
     #8fa3b0 42%,
     #b4c4ce 100%
   );
+  --header-h: 3.75rem;
+  --bottom-chrome: 6.25rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-h: 5rem;
+    --bottom-chrome: 5.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-h: 5.75rem;
+    --bottom-chrome: 5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --bottom-chrome: 1.5rem;
+  }
 }
 
 .app-bg {
@@ -25,6 +50,15 @@ body {
 #__next,
 body > div {
   height: 100%;
+  min-height: 100dvh;
+}
+
+.safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.safe-top {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
 }
 
 @keyframes fade-in-up {
@@ -40,4 +74,35 @@ body > div {
 
 .animate-fade-in-up {
   animation: fade-in-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Plot info — mobile bottom sheet, desktop corner card */
+.plot-info-card {
+  left: 0.625rem;
+  right: 0.625rem;
+  bottom: calc(var(--bottom-chrome) + env(safe-area-inset-bottom, 0px));
+  max-height: calc(
+    100dvh - var(--header-h) - var(--bottom-chrome) - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px) - 0.5rem
+  );
+  display: flex;
+  flex-direction: column;
+}
+
+.plot-info-card__panel {
+  max-height: inherit;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 1024px) {
+  .plot-info-card {
+    left: auto;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    width: min(88vw, 22rem);
+    max-height: calc(100dvh - var(--header-h) - 2rem);
+  }
 }

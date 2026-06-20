@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { PlotInfoCard } from "@/ui/PlotInfoCard";
 import { CameraControls } from "@/ui/CameraControls";
 import { BrandHeader } from "@/ui/BrandHeader";
-import { PoweredBy } from "@/ui/PoweredBy";
+import { CompassRose } from "@/ui/CompassRose";
 import { LoadingOverlay } from "@/ui/LoadingOverlay";
 import { SiteDataBridge } from "@/ui/SiteDataBridge";
 import { useLoadingStore } from "@/store/useLoadingStore";
@@ -33,14 +33,20 @@ function SiteViewerWrapper() {
 
 export default function Home() {
   return (
-    <main className={`relative h-screen w-screen overflow-hidden ${APP_BACKGROUND_CLASS}`}>
-      <SiteDataBridge />
-      <BrandHeader />
-      <PoweredBy />
-      <LoadingOverlay />
-      <PlotInfoCard />
-      <CameraControls />
-      <SiteViewerWrapper />
+    <main
+      className={`relative min-h-[100dvh] w-full overflow-hidden ${APP_BACKGROUND_CLASS}`}
+    >
+      <div className="absolute inset-0 z-0">
+        <SiteViewerWrapper />
+      </div>
+      <div className="pointer-events-none relative z-10 min-h-[100dvh]">
+        <SiteDataBridge />
+        <BrandHeader />
+        <CompassRose />
+        <LoadingOverlay />
+        <PlotInfoCard />
+        <CameraControls />
+      </div>
     </main>
   );
 }

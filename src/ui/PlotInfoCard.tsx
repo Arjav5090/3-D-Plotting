@@ -2,11 +2,8 @@
 
 /**
  * Compact info popup for a selected plot or open space.
- *
- * - Floats near the bottom-right corner (max 350px), never covering the scene.
- * - Glassmorphism card with rounded corners + a close button.
- * - Framer Motion fade + slide-up on enter/exit via AnimatePresence.
- * - Hidden entirely when nothing is selected.
+ * Mobile: scrollable bottom sheet above camera controls.
+ * Desktop: floating card at bottom-right.
  */
 import { AnimatePresence, motion } from "framer-motion";
 import type { PlotStatus } from "@/domain/types/site";
@@ -47,38 +44,37 @@ export function PlotInfoCard() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 28 }}
           transition={{ type: "spring", stiffness: 380, damping: 30, mass: 0.8 }}
-          className="pointer-events-auto fixed bottom-5 right-5 z-30 w-[88vw] max-w-[350px]"
+          className="plot-info-card pointer-events-auto fixed z-40"
         >
-          <div className="overflow-hidden rounded-2xl border border-white/50 bg-white/70 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl">
-            {/* Header */}
-            <div className="flex items-start justify-between gap-3 px-5 pt-4">
-              <div>
-                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+          <div className="plot-info-card__panel overflow-hidden rounded-2xl border border-white/50 bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl">
+            <div className="flex items-start justify-between gap-2 px-4 pt-3 sm:gap-3 sm:px-5 sm:pt-4">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[10px] font-medium uppercase tracking-[0.14em] text-slate-500 sm:text-[11px] sm:tracking-[0.18em]">
                   {data?.metadata.projectName ?? "Site"}
                 </p>
-                <h2 className="mt-0.5 text-2xl font-bold leading-none text-slate-900">
+                <h2 className="mt-0.5 text-xl font-bold leading-tight text-slate-900 sm:text-2xl sm:leading-none">
                   {plot ? `Plot ${plot.number}` : "Open Space"}
                 </h2>
               </div>
               <button
                 onClick={clear}
                 aria-label="Close"
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-900/5 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-900/5 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800 sm:h-8 sm:w-8"
               >
                 ✕
               </button>
             </div>
 
             {plot && (
-              <div className="px-5 pb-5 pt-3">
+              <div className="px-4 pb-4 pt-2 sm:px-5 sm:pb-5 sm:pt-3">
                 <Row label="Area" value={`${plot.area ?? "—"} sq ft`} />
 
                 {dims && (dims.front || dims.back || dims.depth) && (
-                  <div className="mt-3">
-                    <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                  <div className="mt-2.5 sm:mt-3">
+                    <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400 sm:text-[11px]">
                       Dimensions
                     </p>
-                    <div className="mt-1.5 grid grid-cols-3 gap-2">
+                    <div className="mt-1.5 grid grid-cols-3 gap-1.5 sm:gap-2">
                       <Stat label="Front" value={dims.front ?? "—"} />
                       <Stat label="Back" value={dims.back ?? "—"} />
                       <Stat label="Depth" value={dims.depth ?? "—"} />
@@ -86,12 +82,12 @@ export function PlotInfoCard() {
                   </div>
                 )}
 
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                <div className="mt-3 flex items-center justify-between sm:mt-4">
+                  <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400 sm:text-[11px]">
                     Status
                   </span>
                   <span
-                    className={`inline-flex items-center gap-1.5 text-sm font-semibold ${statusMeta.text}`}
+                    className={`inline-flex items-center gap-1.5 text-xs font-semibold sm:text-sm ${statusMeta.text}`}
                   >
                     <span className={`h-1.5 w-1.5 rounded-full ${statusMeta.dot}`} />
                     {statusMeta.label}
@@ -100,7 +96,7 @@ export function PlotInfoCard() {
 
                 <button
                   disabled={status === "sold"}
-                  className="mt-4 w-full rounded-xl bg-slate-900 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+                  className="mt-3 w-full rounded-xl bg-slate-900 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300 sm:mt-4"
                 >
                   {status === "sold" ? "Sold Out" : "Schedule Site Visit"}
                 </button>
@@ -108,7 +104,7 @@ export function PlotInfoCard() {
             )}
 
             {openSpace && (
-              <div className="px-5 pb-5 pt-3">
+              <div className="px-4 pb-4 pt-2 sm:px-5 sm:pb-5 sm:pt-3">
                 <Row label="Size" value={openSpace.size ?? "—"} />
                 <div className="mt-2">
                   <Row label="Area" value={`${openSpace.area ?? "—"} sq ft`} />
@@ -124,22 +120,26 @@ export function PlotInfoCard() {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between border-b border-slate-900/5 pb-2">
-      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+    <div className="flex items-start justify-between gap-3 border-b border-slate-900/5 pb-2">
+      <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-slate-400 sm:text-[11px]">
         {label}
       </span>
-      <span className="text-base font-semibold text-slate-900">{value}</span>
+      <span className="text-right text-sm font-semibold leading-snug text-slate-900 sm:text-base">
+        {value}
+      </span>
     </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-white/60 px-2.5 py-2 text-center ring-1 ring-slate-900/5">
-      <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+    <div className="min-w-0 rounded-lg bg-white/60 px-1.5 py-1.5 text-center ring-1 ring-slate-900/5 sm:px-2.5 sm:py-2">
+      <p className="text-[9px] font-medium uppercase tracking-wide text-slate-400 sm:text-[10px]">
         {label}
       </p>
-      <p className="mt-0.5 text-sm font-semibold text-slate-900">{value}</p>
+      <p className="mt-0.5 break-words text-[11px] font-semibold leading-tight text-slate-900 sm:text-sm">
+        {value}
+      </p>
     </div>
   );
 }

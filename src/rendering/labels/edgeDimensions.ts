@@ -8,6 +8,7 @@ export interface EdgeLabelPlacement {
   /** Y-axis rotation (radians), already normalised for top-down readability. */
   spin: number;
   fontSize: number;
+  maxWidth: number;
 }
 
 function bounds(ring: PolygonRing) {
@@ -39,7 +40,12 @@ function edgeSpin(x1: number, y1: number, x2: number, y2: number): number {
 }
 
 function fontForSpan(span: number): number {
-  return Math.min(0.72, Math.max(0.52, span * 0.085));
+  return Math.min(0.68, Math.max(0.48, span * 0.078));
+}
+
+/** Keep labels inside the edge they describe. */
+export function maxWidthForSpan(span: number): number {
+  return Math.max(1.0, span * 0.82);
 }
 
 function insetInsideEdge(
@@ -72,7 +78,7 @@ function rectangularPlotSlots(plot: Plot): EdgeLabelPlacement[] {
 
   const box = bounds(plot.polygon);
   const [cx, cy] = plot.centroid ?? polygonCentroid(plot.polygon);
-  const margin = Math.min(1.0, Math.min(box.w, box.d) * 0.14);
+  const margin = Math.min(1.25, Math.min(box.w, box.d) * 0.16);
   const fs = fontForSpan(Math.min(box.w, box.d));
   const facing = plot.facing ?? "E";
 
@@ -86,6 +92,7 @@ function rectangularPlotSlots(plot: Plot): EdgeLabelPlacement[] {
         y: cy,
         spin: readableSpin(Math.PI / 2),
         fontSize: fs,
+        maxWidth: maxWidthForSpan(box.d),
       });
     }
     if (dim.back) {
@@ -95,6 +102,7 @@ function rectangularPlotSlots(plot: Plot): EdgeLabelPlacement[] {
         y: box.minY + margin,
         spin: 0,
         fontSize: fs,
+        maxWidth: maxWidthForSpan(box.w),
       });
     }
     if (dim.front) {
@@ -104,6 +112,7 @@ function rectangularPlotSlots(plot: Plot): EdgeLabelPlacement[] {
         y: box.maxY - margin,
         spin: 0,
         fontSize: fs,
+        maxWidth: maxWidthForSpan(box.w),
       });
     }
   } else {
@@ -114,6 +123,7 @@ function rectangularPlotSlots(plot: Plot): EdgeLabelPlacement[] {
         y: cy,
         spin: readableSpin(Math.PI / 2),
         fontSize: fs,
+        maxWidth: maxWidthForSpan(box.d),
       });
     }
     if (dim.front) {
@@ -123,6 +133,7 @@ function rectangularPlotSlots(plot: Plot): EdgeLabelPlacement[] {
         y: box.minY + margin,
         spin: 0,
         fontSize: fs,
+        maxWidth: maxWidthForSpan(box.w),
       });
     }
     if (dim.back) {
@@ -132,6 +143,7 @@ function rectangularPlotSlots(plot: Plot): EdgeLabelPlacement[] {
         y: box.maxY - margin,
         spin: 0,
         fontSize: fs,
+        maxWidth: maxWidthForSpan(box.w),
       });
     }
   }
@@ -144,7 +156,7 @@ function irregularPlotEdges(plot: Plot): EdgeLabelPlacement[] {
   const [cx, cy] = plot.centroid ?? polygonCentroid(ring);
   const box = bounds(ring);
   const out: EdgeLabelPlacement[] = [];
-  const inset = Math.min(0.85, Math.min(box.w, box.d) * 0.1);
+  const inset = Math.min(0.95, Math.min(box.w, box.d) * 0.12);
 
   for (let i = 0; i < ring.length; i++) {
     const [x1, y1] = ring[i];
@@ -163,6 +175,7 @@ function irregularPlotEdges(plot: Plot): EdgeLabelPlacement[] {
       y,
       spin: edgeSpin(x1, y1, x2, y2),
       fontSize: fontForSpan(length),
+      maxWidth: maxWidthForSpan(length),
     });
   }
 
@@ -204,6 +217,7 @@ export function openSpaceEdgePlacements(openSpace: OpenSpace): EdgeLabelPlacemen
         y,
         spin: edgeSpin(x1, y1, x2, y2),
         fontSize: fs,
+        maxWidth: maxWidthForSpan(Math.hypot(x2 - x1, y2 - y1)),
       });
     }
     return out;
@@ -217,6 +231,7 @@ export function openSpaceEdgePlacements(openSpace: OpenSpace): EdgeLabelPlacemen
       y: box.minY + inset,
       spin: 0,
       fontSize: fs,
+      maxWidth: maxWidthForSpan(box.w),
     });
     out.push({
       text: parts[1],
@@ -224,6 +239,7 @@ export function openSpaceEdgePlacements(openSpace: OpenSpace): EdgeLabelPlacemen
       y: cy,
       spin: readableSpin(Math.PI / 2),
       fontSize: fs,
+      maxWidth: maxWidthForSpan(box.d),
     });
   }
 

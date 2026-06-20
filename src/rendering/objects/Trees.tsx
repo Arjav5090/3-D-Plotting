@@ -99,6 +99,12 @@ export function Trees({
     addSegment(4);
     addSegment(5, 2);
 
+    // Front-left exterior tree (outside the west wall, left of the gate).
+    {
+      const [ox, oy] = outwardOffset(-15.52, 0, -16.028, 9.043, OFFSET + 0.6);
+      pts.push([-15.52 + ox, 0 + oy, seed++]);
+    }
+
     const placements = pts.map(([x, y, i]) => {
       const yaw = rand(i + 1) * Math.PI * 2;
       const s = uniform * (0.92 + rand(i + 11) * 0.15);

@@ -9,6 +9,7 @@ interface EdgeDimensionLabelsProps {
   placements: EdgeLabelPlacement[];
   surfaceY: number;
   color?: string;
+  outlineWidth?: number;
 }
 
 /** Dimension strings along parcel edges — tidy, top-down readable. */
@@ -16,6 +17,7 @@ export function EdgeDimensionLabels({
   placements,
   surfaceY,
   color = "#2a2a2a",
+  outlineWidth = 0.035,
 }: EdgeDimensionLabelsProps) {
   return (
     <group raycast={noRaycast}>
@@ -31,8 +33,9 @@ export function EdgeDimensionLabels({
             color={color}
             anchorX="center"
             anchorY="middle"
+            maxWidth={p.maxWidth}
             letterSpacing={0.02}
-            outlineWidth={0.035}
+            outlineWidth={outlineWidth}
             outlineColor="#ffffff"
             outlineOpacity={0.95}
             renderOrder={20}
