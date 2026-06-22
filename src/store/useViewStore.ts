@@ -9,7 +9,7 @@
  */
 import { create } from "zustand";
 
-export type ViewMode = "master" | "gate" | "garden" | "focus";
+export type ViewMode = "master" | "gate";
 
 export interface ViewState {
   mode: ViewMode;
@@ -17,8 +17,6 @@ export interface ViewState {
   resetNonce: number;
 
   setMode: (mode: ViewMode) => void;
-  /** Switch to the plot-focus preset (used when a plot is selected). */
-  focusSelected: () => void;
   /** Return to the master plan view and force a re-fit. */
   reset: () => void;
 }
@@ -28,6 +26,5 @@ export const useViewStore = create<ViewState>((set) => ({
   resetNonce: 0,
 
   setMode: (mode) => set({ mode }),
-  focusSelected: () => set({ mode: "focus" }),
   reset: () => set((s) => ({ mode: "master", resetNonce: s.resetNonce + 1 })),
 }));

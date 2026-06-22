@@ -11,7 +11,7 @@
  */
 import { useMemo } from "react";
 import { Environment } from "@react-three/drei";
-import { getSiteBounds } from "@/generation/geometry";
+import { getSiteBounds, buildPlotDividerEdges } from "@/generation/geometry";
 import { extendedMainRoadPolygon } from "@/generation/roadGeometry";
 import { useSiteData } from "@/data/loaders/useSiteData";
 import { PlotMesh } from "@/rendering/objects/PlotMesh";
@@ -42,8 +42,13 @@ export function SiteRenderer() {
 
   const bounds = useMemo(() => (data ? getSiteBounds(data) : null), [data]);
 
+  const plotDividerEdges = useMemo(
+    () => (data ? buildPlotDividerEdges(data.plots) : new Map()),
+    [data],
+  );
+
   const landmarks = useMemo<Landmarks>(() => {
-    if (!data) return { gate: null, garden: null };
+    if (!data) return { gate: null };
 
     const gateB = data.boundaries.find((b) => b.kind === "gate");
     let gate: Landmarks["gate"] = null;
@@ -53,28 +58,7 @@ export function SiteRenderer() {
       gate = [sx, sy];
     }
 
-    const gardenO = data.openSpaces.find((o) => o.id === "os-suda");
-    let garden: Landmarks["garden"] = null;
-    if (gardenO) {
-      let minX = Infinity;
-      let minY = Infinity;
-      let maxX = -Infinity;
-      let maxY = -Infinity;
-      for (const [x, y] of gardenO.polygon) {
-        if (x < minX) minX = x;
-        if (y < minY) minY = y;
-        if (x > maxX) maxX = x;
-        if (y > maxY) maxY = y;
-      }
-      garden = {
-        cx: (minX + maxX) / 2,
-        cy: (minY + maxY) / 2,
-        w: maxX - minX,
-        d: maxY - minY,
-      };
-    }
-
-    return { gate, garden };
+    return { gate };
   }, [data]);
 
   if (!data || !bounds) return null;
@@ -94,11 +78,7 @@ export function SiteRenderer() {
         environmentIntensity={isMobile ? 0.72 : 1.05}
       />
       <ShadowCatcher size={bounds.size} />
-      <CameraController
-        bounds={bounds}
-        plots={data.plots}
-        landmarks={landmarks}
-      />
+      <CameraController bounds={bounds} landmarks={landmarks} />
       <CompassSync />
 
       {/* Center the whole site at the origin. world z = -y, so add +cy. */}
@@ -143,6 +123,7 @@ export function SiteRenderer() {
             key={plot.id}
             plot={plot}
             defaults={data.defaults}
+            dividerEdges={plotDividerEdges.get(plot.id)}
             labelScale={isMobile ? 1.22 : 1}
           />
         ))}

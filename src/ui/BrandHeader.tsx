@@ -6,7 +6,7 @@ interface BrandHeaderProps {
   className?: string;
 }
 
-/** Top bar: Sahaj Group (left), Vaishnav Villa (centre), credit (right). */
+/** Top bar: Sahaj Group (left), Vaishnav Villa (centre), Powered by (right). */
 export function BrandHeader({ className = "" }: BrandHeaderProps) {
   return (
     <header
@@ -36,11 +36,27 @@ export function BrandHeader({ className = "" }: BrandHeaderProps) {
           />
         </div>
 
-        <p className="justify-self-end text-right text-[9px] font-medium leading-tight tracking-wide text-slate-600/90 sm:text-[11px] md:text-xs">
-          Powered by
-          <br className="sm:hidden" />
-          <span className="font-semibold text-slate-800"> Aarjav Infotech</span>
-        </p>
+        <div
+          className="justify-self-end flex flex-col items-end gap-0.5"
+          aria-label="Powered by Aarjav Infotech"
+        >
+          <p className="text-[9px] font-medium tracking-wide text-slate-600/90 sm:text-[10px]">
+            Powered by
+          </p>
+          <div className="flex items-center gap-1.5">
+            <Image
+              src="/branding/AarjavInfotech.svg"
+              alt=""
+              width={383}
+              height={316}
+              unoptimized
+              className="h-6 w-auto drop-shadow-sm sm:h-7"
+            />
+            <span className="text-[10px] font-semibold leading-tight text-slate-800 sm:text-xs">
+              Aarjav Infotech
+            </span>
+          </div>
+        </div>
       </div>
     </header>
   );

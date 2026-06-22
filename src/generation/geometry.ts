@@ -152,3 +152,51 @@ export function polygonCentroid(ring: PolygonRing): Point2D {
   const f = 1 / (3 * twiceArea);
   return [cx * f, cy * f];
 }
+
+const EDGE_KEY_SCALE = 1000;
+
+/** Canonical undirected edge id for 2D parcel rings (1 mm site precision). */
+export function polygonEdgeKey(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+): string {
+  const r = (n: number) => Math.round(n * EDGE_KEY_SCALE) / EDGE_KEY_SCALE;
+  const a = `${r(x1)},${r(y1)}`;
+  const b = `${r(x2)},${r(y2)}`;
+  return a < b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+/**
+ * Plot-to-plot divider edges only — each shared internal edge is owned by one
+ * plot so the black strip is not drawn on road / wall / O.S. perimeters.
+ */
+export function buildPlotDividerEdges(
+  plots: { id: string; polygon: PolygonRing }[],
+): Map<string, Set<string>> {
+  const edgePlots = new Map<string, string[]>();
+
+  for (const plot of plots) {
+    const ring = plot.polygon;
+    for (let i = 0; i < ring.length; i++) {
+      const [x1, y1] = ring[i];
+      const [x2, y2] = ring[(i + 1) % ring.length];
+      const key = polygonEdgeKey(x1, y1, x2, y2);
+      const list = edgePlots.get(key);
+      if (list) list.push(plot.id);
+      else edgePlots.set(key, [plot.id]);
+    }
+  }
+
+  const perPlot = new Map<string, Set<string>>();
+  for (const plot of plots) perPlot.set(plot.id, new Set());
+
+  for (const [key, ids] of edgePlots) {
+    if (ids.length < 2) continue;
+    const owner = [...ids].sort()[0];
+    perPlot.get(owner)!.add(key);
+  }
+
+  return perPlot;
+}

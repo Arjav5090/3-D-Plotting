@@ -88,7 +88,8 @@ interface Mover {
 export function Cars() {
   const parked = useMemo<Parked[]>(
     () => [
-      { x: 4.7, y: 13, rotationY: Math.PI / 2, variant: 0, key: "e0" },
+      // East lane — south of the "22 FT ROAD" label (label centre ≈ y 12.5).
+      { x: 4.7, y: 7.8, rotationY: Math.PI / 2, variant: 0, key: "e0" },
       { x: 1.3, y: 26, rotationY: -Math.PI / 2, variant: 1, key: "w0" },
     ],
     [],
@@ -137,7 +138,7 @@ export function Cars() {
       {parked.map((p) => (
         <group
           key={p.key}
-          position={[p.x, 0, -p.y]}
+          position={[p.x, ROAD_SURFACE_Y, -p.y]}
           rotation={[0, p.rotationY, 0]}
         >
           <GlbCar url={CAR_URLS[p.variant % 3]} />

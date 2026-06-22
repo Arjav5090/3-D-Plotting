@@ -1,22 +1,36 @@
 "use client";
 
-/**
- * Compact info popup for a selected plot or open space.
- * Mobile: scrollable bottom sheet above camera controls.
- * Desktop: floating card at bottom-right.
- */
+import type { ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { PlotStatus } from "@/domain/types/site";
+import type { Plot, PlotStatus } from "@/domain/types/site";
 import { useSiteData } from "@/data/loaders/useSiteData";
 import { useSelectionStore } from "@/store/useSelectionStore";
 import { ContactCtas } from "@/ui/ContactCtas";
 
-const STATUS_META: Record<PlotStatus, { label: string; dot: string; text: string }> = {
-  available: { label: "Available", dot: "bg-emerald-500", text: "text-emerald-700" },
-  reserved: { label: "Reserved", dot: "bg-amber-500", text: "text-amber-700" },
-  sold: { label: "Sold", dot: "bg-rose-500", text: "text-rose-700" },
-  "not-for-sale": { label: "Not for sale", dot: "bg-slate-400", text: "text-slate-600" },
+const STATUS_META: Record<
+  PlotStatus,
+  { label: string; badge: string }
+> = {
+  available: { label: "Available", badge: "bg-emerald-500 text-white" },
+  reserved: { label: "Reserved", badge: "bg-amber-500 text-white" },
+  sold: { label: "Sold", badge: "bg-red-500 text-white" },
+  "not-for-sale": { label: "Not for sale", badge: "bg-slate-400 text-white" },
 };
+
+function sqFtToSqYd(sqFt: number): string {
+  return `≈ ${Math.round(sqFt / 9)} sq.yd`;
+}
+
+function formatPlotSize(plot: Plot): string {
+  const dims = plot.dimensions;
+  if (!dims) return "—";
+  const width = dims.back ?? dims.front;
+  const depth = dims.depth;
+  if (width && depth) return `${width} x ${depth}`;
+  if (width) return width;
+  if (depth) return depth;
+  return "—";
+}
 
 export function PlotInfoCard() {
   const { data } = useSiteData();
@@ -34,7 +48,6 @@ export function PlotInfoCard() {
 
   const status = plot?.status ?? "available";
   const statusMeta = STATUS_META[status];
-  const dims = plot?.dimensions;
 
   return (
     <AnimatePresence>
@@ -47,69 +60,70 @@ export function PlotInfoCard() {
           transition={{ type: "spring", stiffness: 380, damping: 30, mass: 0.8 }}
           className="plot-info-card pointer-events-auto fixed z-40"
         >
-          <div className="plot-info-card__panel overflow-hidden rounded-2xl border border-white/50 bg-white/95 shadow-2xl ring-1 ring-black/5 md:bg-white/70 md:backdrop-blur-xl">
-            <div className="flex items-start justify-between gap-2 px-4 pt-3 sm:gap-3 sm:px-5 sm:pt-4">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[10px] font-medium uppercase tracking-[0.14em] text-slate-500 sm:text-[11px] sm:tracking-[0.18em]">
-                  {data?.metadata.projectName ?? "Site"}
-                </p>
-                <h2 className="mt-0.5 text-xl font-bold leading-tight text-slate-900 sm:text-2xl sm:leading-none">
-                  {plot ? `Plot ${plot.number}` : "Open Space"}
-                </h2>
-              </div>
+          <div className="plot-info-card__panel overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xl">
+            <div className="flex items-start justify-between gap-3 px-5 pb-1 pt-5">
+              <h2 className="text-xl font-bold tracking-tight text-slate-900">
+                Unit Details
+              </h2>
               <button
                 onClick={clear}
                 aria-label="Close"
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-900/5 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800 sm:h-8 sm:w-8"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
               >
                 ✕
               </button>
             </div>
 
             {plot && (
-              <div className="px-4 pb-4 pt-2 sm:px-5 sm:pb-5 sm:pt-3">
-                <Row label="Area" value={`${plot.area ?? "—"} sq ft`} />
+              <div className="px-5 pb-5 pt-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                  General Information
+                </p>
 
-                {dims && (dims.front || dims.back || dims.depth) && (
-                  <div className="mt-2.5 sm:mt-3">
-                    <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400 sm:text-[11px]">
-                      Dimensions
-                    </p>
-                    <div className="mt-1.5 grid grid-cols-3 gap-1.5 sm:gap-2">
-                      <Stat label="Front" value={dims.front ?? "—"} />
-                      <Stat label="Back" value={dims.back ?? "—"} />
-                      <Stat label="Depth" value={dims.depth ?? "—"} />
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-3 flex items-center justify-between sm:mt-4">
-                  <span className="text-[10px] font-medium uppercase tracking-wide text-slate-400 sm:text-[11px]">
-                    Status
-                  </span>
-                  <span
-                    className={`inline-flex items-center gap-1.5 text-xs font-semibold sm:text-sm ${statusMeta.text}`}
-                  >
-                    <span className={`h-1.5 w-1.5 rounded-full ${statusMeta.dot}`} />
-                    {statusMeta.label}
-                  </span>
+                <div className="mt-3 grid grid-cols-2 gap-2.5">
+                  <InfoField label="Name" value={`Plot ${plot.number}`} />
+                  <InfoField
+                    label="Status"
+                    value={
+                      <span
+                        className={`inline-flex rounded-full px-3 py-0.5 text-sm font-semibold ${statusMeta.badge}`}
+                      >
+                        {statusMeta.label}
+                      </span>
+                    }
+                  />
+                  <InfoField label="Facing" value={plot.facing ?? "—"} />
+                  <InfoField label="Size" value={formatPlotSize(plot)} />
+                  <InfoField
+                    label="Carpet Area"
+                    value={plot.area ? sqFtToSqYd(plot.area) : "—"}
+                    className="col-span-2"
+                  />
                 </div>
 
-                <div className="mt-3 sm:mt-4">
-                  <ContactCtas />
-                </div>
+                <BookingSection />
               </div>
             )}
 
             {openSpace && (
-              <div className="px-4 pb-4 pt-2 sm:px-5 sm:pb-5 sm:pt-3">
-                <Row label="Size" value={openSpace.size ?? "—"} />
-                <div className="mt-2">
-                  <Row label="Area" value={`${openSpace.area ?? "—"} sq ft`} />
+              <div className="px-5 pb-5 pt-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                  General Information
+                </p>
+
+                <div className="mt-3 grid grid-cols-2 gap-2.5">
+                  <InfoField label="Name" value={openSpace.label ?? "Open Space"} />
+                  <InfoField label="Status" value="Open Space" />
+                  <InfoField label="Facing" value="—" />
+                  <InfoField label="Size" value={openSpace.size ?? "—"} />
+                  <InfoField
+                    label="Carpet Area"
+                    value={openSpace.area ? sqFtToSqYd(openSpace.area) : "—"}
+                    className="col-span-2"
+                  />
                 </div>
-                <div className="mt-3 sm:mt-4">
-                  <ContactCtas />
-                </div>
+
+                <BookingSection />
               </div>
             )}
           </div>
@@ -119,28 +133,33 @@ export function PlotInfoCard() {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function BookingSection() {
   return (
-    <div className="flex items-start justify-between gap-3 border-b border-slate-900/5 pb-2">
-      <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-slate-400 sm:text-[11px]">
-        {label}
-      </span>
-      <span className="text-right text-sm font-semibold leading-snug text-slate-900 sm:text-base">
-        {value}
-      </span>
+    <div className="mt-5 border-t border-slate-100 pt-5">
+      <h3 className="text-base font-bold text-slate-900">Booking &amp; Inquiry</h3>
+      <p className="mt-1 text-sm leading-snug text-slate-500">
+        Contact us for booking assistance and unit inquiries
+      </p>
+      <ContactCtas variant="outline" className="mt-4" />
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function InfoField({
+  label,
+  value,
+  className = "",
+}: {
+  label: string;
+  value: ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="min-w-0 rounded-lg bg-white/60 px-1.5 py-1.5 text-center ring-1 ring-slate-900/5 sm:px-2.5 sm:py-2">
-      <p className="text-[9px] font-medium uppercase tracking-wide text-slate-400 sm:text-[10px]">
-        {label}
-      </p>
-      <p className="mt-0.5 break-words text-[11px] font-semibold leading-tight text-slate-900 sm:text-sm">
-        {value}
-      </p>
+    <div
+      className={`rounded-2xl bg-slate-50 px-3.5 py-3 ${className}`}
+    >
+      <p className="text-xs font-medium text-slate-400">{label}</p>
+      <div className="mt-1 text-sm font-bold leading-snug text-slate-900">{value}</div>
     </div>
   );
 }

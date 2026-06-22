@@ -97,6 +97,8 @@ interface InstancedGlbProps {
   placements: Placement2D[];
   targetHeight?: number;
   targetFootprint?: number;
+  /** World Y for the grounded base (garden grass / paths sit above y=0). */
+  surfaceY?: number;
 }
 
 /**
@@ -108,6 +110,7 @@ export function InstancedGlb({
   placements,
   targetHeight,
   targetFootprint,
+  surfaceY = 0,
 }: InstancedGlbProps) {
   const { scene } = useGLTF(url);
   const parts = useMemo(() => extractParts(scene), [scene]);
@@ -135,7 +138,7 @@ export function InstancedGlb({
 
     const matrices: THREE.Matrix4[] = placements.map((p) => {
       const s = uniform * (p.scale ?? 1);
-      const pos = new THREE.Vector3(p.x, 0, -p.y);
+      const pos = new THREE.Vector3(p.x, surfaceY, -p.y);
       const quat = new THREE.Quaternion().setFromAxisAngle(
         Y_AXIS,
         p.rotationY ?? 0,
@@ -149,7 +152,7 @@ export function InstancedGlb({
       receiveShadow: true,
       raycast: false,
     });
-  }, [parts, box, placements, targetHeight, targetFootprint]);
+  }, [parts, box, placements, targetHeight, targetFootprint, surfaceY]);
 
   useEffect(() => () => disposeInstancedParts(instanced), [instanced]);
 

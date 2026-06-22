@@ -15,15 +15,11 @@ import { AdaptiveQuality } from "@/rendering/quality/AdaptiveQuality";
 import { canvasDprRange } from "@/rendering/quality/renderQuality";
 import "@/rendering/models/assetPaths";
 import { useSelectionStore } from "@/store/useSelectionStore";
-import { useViewStore } from "@/store/useViewStore";
 import { useViewportProfile } from "@/hooks/useViewportProfile";
 
-/** Empty click: deselect and return the camera to the master plan view. */
+/** Empty click: deselect plot without moving the camera. */
 function handleMissed() {
   useSelectionStore.getState().clear();
-  if (useViewStore.getState().mode === "focus") {
-    useViewStore.getState().setMode("master");
-  }
 }
 
 export function SiteViewer() {
@@ -53,19 +49,24 @@ export function SiteViewer() {
       <OrbitControls
         makeDefault
         enableDamping
-        dampingFactor={0.08}
-        rotateSpeed={isMobile ? 0.65 : 1}
-        zoomSpeed={isMobile ? 0.75 : 1}
-        panSpeed={isMobile ? 0.65 : 1}
+        dampingFactor={0.06}
+        enablePan
+        enableZoom
+        enableRotate
+        screenSpacePanning
+        rotateSpeed={isMobile ? 0.85 : 1.1}
+        zoomSpeed={isMobile ? 1 : 1.15}
+        panSpeed={isMobile ? 0.85 : 1.1}
         touches={{ ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN }}
         mouseButtons={{
           LEFT: MOUSE.ROTATE,
           MIDDLE: MOUSE.DOLLY,
           RIGHT: MOUSE.PAN,
         }}
-        maxPolarAngle={Math.PI / 2.05}
-        minDistance={3}
-        maxDistance={2000}
+        minPolarAngle={0.12}
+        maxPolarAngle={Math.PI / 2 - 0.02}
+        minDistance={2}
+        maxDistance={2500}
       />
     </Canvas>
   );

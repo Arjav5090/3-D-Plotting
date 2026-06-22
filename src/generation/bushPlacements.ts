@@ -86,6 +86,13 @@ export function bushPlacements(data: SiteData): Placement2D[] {
       if (!isInternalRoadVertex(vx, vy, data.roads)) continue;
       if (!isDividerRoadCorner(prev, vertex, next)) continue;
       if (vy < 1.2) continue;
+      // No bushes at the north wall junction (plots 7 & 8).
+      if (
+        (plot.id === "plot-07" || plot.id === "plot-08") &&
+        vy > 33.5
+      ) {
+        continue;
+      }
 
       const key = `${vx.toFixed(2)},${vy.toFixed(2)}`;
       if (seen.has(key)) continue;

@@ -18,6 +18,7 @@ import {
   PLOT_COLORS,
   ACCENT,
   HOVER_OUTLINE,
+  STATUS_PLOT_COLORS,
 } from "@/rendering/materials/colors";
 import {
   applyWorldGrassUVs,
@@ -28,11 +29,14 @@ import { EdgeDimensionLabels } from "@/rendering/labels/EdgeDimensionLabels";
 import { plotEdgePlacements, plotNumberSize } from "@/rendering/labels/edgeDimensions";
 import { PolygonBorderLoop } from "@/rendering/objects/PolygonBorderLoop";
 import { useSelectionStore } from "@/store/useSelectionStore";
-import { useViewStore } from "@/store/useViewStore";
+import { useStatusViewStore } from "@/store/useStatusViewStore";
+import type { PlotStatus } from "@/domain/types/site";
 
 interface PlotMeshProps {
   plot: Plot;
   defaults?: SiteDefaults;
+  /** Shared plot-to-plot divider edges this parcel should draw. */
+  dividerEdges?: Set<string>;
   /** Scales edge-dimension text for small screens (never hides labels). */
   labelScale?: number;
 }
@@ -44,7 +48,17 @@ const COLOR_BASE = new THREE.Color(PLOT_COLORS.base);
 const COLOR_HOVER = new THREE.Color(PLOT_COLORS.hover);
 const COLOR_SELECTED = new THREE.Color(PLOT_COLORS.selected);
 
-export function PlotMesh({ plot, defaults, labelScale = 1 }: PlotMeshProps) {
+function statusTint(
+  status: PlotStatus | undefined,
+  defaults?: SiteDefaults,
+): THREE.Color {
+  const key = status ?? "available";
+  const hex =
+    defaults?.statusColors?.[key] ?? STATUS_PLOT_COLORS[key] ?? STATUS_PLOT_COLORS.available;
+  return new THREE.Color(hex);
+}
+
+export function PlotMesh({ plot, defaults, dividerEdges, labelScale = 1 }: PlotMeshProps) {
   const depth =
     plot.building?.heightOverride ?? defaults?.plotExtrudeHeight ?? 0.15;
 
@@ -111,14 +125,24 @@ export function PlotMesh({ plot, defaults, labelScale = 1 }: PlotMeshProps) {
   const isHovered = useSelectionStore((s) => s.hoveredPlotId === plot.id);
   const select = useSelectionStore((s) => s.select);
   const setHovered = useSelectionStore((s) => s.setHovered);
+  const statusView = useStatusViewStore((s) => s.active);
+
+  const statusColor = useMemo(
+    () => statusTint(plot.status, defaults),
+    [plot.status, defaults],
+  );
 
   const matRef = useRef<THREE.MeshStandardMaterial>(null);
 
   const targetColor = isSelected
     ? COLOR_SELECTED
     : isHovered
-      ? COLOR_HOVER
-      : COLOR_BASE;
+      ? statusView
+        ? statusColor.clone().lerp(COLOR_HOVER, 0.35)
+        : COLOR_HOVER
+      : statusView
+        ? statusColor
+        : COLOR_BASE;
   const targetEmissive = isSelected ? 0.35 : isHovered ? 0.08 : 0;
 
   useFrame((_, delta) => {
@@ -136,7 +160,6 @@ export function PlotMesh({ plot, defaults, labelScale = 1 }: PlotMeshProps) {
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     select(plot.id);
-    useViewStore.getState().focusSelected();
   };
 
   const handleOver = (e: ThreeEvent<PointerEvent>) => {
@@ -207,7 +230,11 @@ export function PlotMesh({ plot, defaults, labelScale = 1 }: PlotMeshProps) {
         )}
       </mesh>
 
-      <PolygonBorderLoop polygon={plot.polygon} y={borderY} />
+      <PolygonBorderLoop
+        polygon={plot.polygon}
+        y={borderY}
+        dividerEdges={dividerEdges}
+      />
 
       <EdgeDimensionLabels
         placements={edgeLabels}

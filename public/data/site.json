@@ -44,7 +44,7 @@
       "area": 736,
       "status": "available",
       "facing": "E",
-      "dimensions": { "front": "52'-7\"", "back": "50'", "depth": "14'" }
+      "dimensions": { "front": "", "back": "", "depth": "14'" }
     },
     {
       "id": "plot-03",
@@ -53,7 +53,7 @@
       "area": 700,
       "status": "available",
       "facing": "E",
-      "dimensions": { "front": "50'", "back": "47'-5\"", "depth": "14'" }
+      "dimensions": { "front": "", "back": "50'", "depth": "14'" }
     },
     {
       "id": "plot-04",
@@ -62,7 +62,7 @@
       "area": 664,
       "status": "available",
       "facing": "E",
-      "dimensions": { "front": "47'-5\"", "back": "44'-10\"", "depth": "14'" }
+      "dimensions": { "front": "", "back": "47'-5\"", "depth": "14'" }
     },
     {
       "id": "plot-05",
@@ -71,7 +71,7 @@
       "area": 628,
       "status": "available",
       "facing": "E",
-      "dimensions": { "front": "44'-10\"", "back": "42'-3\"", "depth": "14'" }
+      "dimensions": { "front": "", "back": "44'-10\"", "depth": "14'" }
     },
     {
       "id": "plot-06",
@@ -80,7 +80,7 @@
       "area": 592,
       "status": "available",
       "facing": "E",
-      "dimensions": { "front": "42'-3\"", "back": "39'-8\"", "depth": "14'" }
+      "dimensions": { "front": "", "back": "42'-3\"", "depth": "14'" }
     },
     {
       "id": "plot-07",
@@ -89,7 +89,7 @@
       "area": 536,
       "status": "sold",
       "facing": "E",
-      "dimensions": { "front": "39'-8\"", "back": "37'", "depth": "14'" }
+      "dimensions": { "front": "37'", "back": "39'-8\"", "depth": "14'" }
     },
     {
       "id": "plot-08",
@@ -107,7 +107,7 @@
       "area": 572,
       "status": "available",
       "facing": "W",
-      "dimensions": { "front": "44'", "back": "44'", "depth": "13'" }
+      "dimensions": { "front": "44'", "back": "", "depth": "13'" }
     },
     {
       "id": "plot-10",
@@ -116,7 +116,7 @@
       "area": 594,
       "status": "available",
       "facing": "W",
-      "dimensions": { "front": "44'", "back": "44'", "depth": "13'-6\"" }
+      "dimensions": { "front": "44'", "back": "", "depth": "13'-6\"" }
     },
     {
       "id": "plot-11",
@@ -125,7 +125,7 @@
       "area": 594,
       "status": "available",
       "facing": "W",
-      "dimensions": { "front": "44'", "back": "44'", "depth": "13'-6\"" }
+      "dimensions": { "front": "44'", "back": "", "depth": "13'-6\"" }
     },
     {
       "id": "plot-12",
@@ -134,7 +134,7 @@
       "area": 594,
       "status": "available",
       "facing": "W",
-      "dimensions": { "front": "44'", "back": "44'", "depth": "13'-6\"" }
+      "dimensions": { "front": "44'", "back": "", "depth": "13'-6\"" }
     },
     {
       "id": "plot-13",
@@ -143,7 +143,7 @@
       "area": 594,
       "status": "available",
       "facing": "W",
-      "dimensions": { "front": "44'", "back": "44'", "depth": "13'-6\"" }
+      "dimensions": { "front": "", "back": "", "depth": "13'-6\"" }
     },
     {
       "id": "plot-14",
@@ -162,7 +162,7 @@
       "name": "22 FT Wide Road",
       "kind": "internal",
       "polygon": [[0, -0.12], [6.706, -0.12], [6.706, 34.265], [0, 34.645]],
-      "width": { "value": 6.706, "raw": "22 FT" },
+      "width": { "value": 10.706, "raw": "22 FT" },
       "surface": "asphalt"
     },
     {
@@ -239,7 +239,7 @@
     { "id": "lbl-p14", "kind": "plot-number", "text": "14", "at": [13.41, 5.14], "refId": "plot-14" },
     { "id": "lbl-suda", "kind": "open-space", "text": "SUDA GARDEN", "at": [4.4, 46], "refId": "os-suda" },
     { "id": "lbl-os", "kind": "open-space", "text": "O.S.", "at": [-14.6, 1.5], "refId": "os-01" },
-    { "id": "lbl-road-22", "kind": "road-name", "text": "22 FT ROAD", "at": [4.95, 12.5], "rotation": 90, "refId": "road-internal-1" },
+    { "id": "lbl-road-22", "kind": "road-name", "text": "22 FT ROAD", "at": [4.95, 18.5], "rotation": 90, "refId": "road-internal-1" },
     { "id": "lbl-road-18", "kind": "road-name", "text": "18 M ROAD", "at": [1, -14], "rotation": 0, "refId": "road-main-1" }
   ]
 }

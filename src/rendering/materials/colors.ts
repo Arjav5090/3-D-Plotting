@@ -102,3 +102,10 @@ export const PLOT_LABEL = "#ffffff";
 export const ACCENT = "#4f8cff";
 /** Hover outline color. */
 export const HOVER_OUTLINE = "#ffffff";
+/** Default plot status tints when the status overlay is active. */
+export const STATUS_PLOT_COLORS = {
+  available: "#4ade80",
+  reserved: "#fbbf24",
+  sold: "#f87171",
+  "not-for-sale": "#9ca3af",
+} as const;

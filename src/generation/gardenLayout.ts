@@ -19,7 +19,8 @@ export interface GardenNorthLayout {
   W: number;
   D: number;
   pathW: number;
-  fountainR: number;
+  /** Max XZ footprint (metres) for the central fountain GLB. */
+  fountainFootprint: number;
   /** Grass cut-out + plaza disc around the central fountain. */
   fountainPadR: number;
   inset: number;
@@ -108,16 +109,25 @@ function pairX(cx: number, ox: number, y: number, rot = 0, scale = 1): Placement
   ];
 }
 
+/** Y rotation so a bench seat faces a target point in site coordinates. */
+function benchYawToward(targetX: number, targetY: number, x: number, y: number): number {
+  const dx = targetX - x;
+  const dz = -(targetY - y);
+  return Math.atan2(dx, dz);
+}
+
 function buildNorthLayout(pathCx: number, pathW: number): GardenNorthLayout {
   const { minX, maxX, lawnEastX, minY, maxY } = NORTH;
   const W = maxX - minX;
   const D = maxY - minY;
   const cx = (minX + maxX) / 2;
   const cy = (minY + maxY) / 2;
-  const pw = Math.min(W, D) * 0.085;
-  const fountainR = Math.min(W, D) * 0.095;
-  const fountainPadR = fountainR * 1.55 + pw * 0.35;
-  const inset = Math.min(W, D) * 0.1;
+  const span = Math.min(W, D);
+  const pw = span * 0.085;
+  // Wide tiered fountain model — scale by footprint, not the old compact height estimate.
+  const fountainFootprint = span * 0.3;
+  const fountainPadR = fountainFootprint * 0.58 + pw * 0.45;
+  const inset = span * 0.1;
   const loopHalfW = W / 2 - inset;
   const loopHalfD = D / 2 - inset;
   const southLoopY = cy - loopHalfD;
@@ -127,15 +137,12 @@ function buildNorthLayout(pathCx: number, pathW: number): GardenNorthLayout {
   const innerMaxY = maxY - inset / 2;
 
   // Clearances from fountain plaza and path slabs (metres).
-  const benchDist = fountainPadR + pw * 0.5 + 1.35;
-  const bushInnerX = 5.4;
-  const bushInnerY = 4.4;
-  const flowerX = 7.6;
-  const flowerY = 5.9;
+  const benchDist = fountainPadR + pw * 0.65 + 1.55;
+  const flowerX = span * 0.3;
+  const flowerY = span * 0.245;
   const loopCornerX = loopHalfW - 1.85;
   const loopCornerY = loopHalfD - 1.75;
   const edgeInset = 2.6;
-  const edgeX = W / 2 - edgeInset;
   const treeX = W / 2 - 3.5;
   const potSpread = (W - inset * 2) / 6;
 
@@ -149,7 +156,7 @@ function buildNorthLayout(pathCx: number, pathW: number): GardenNorthLayout {
     W,
     D,
     pathW: pw,
-    fountainR,
+    fountainFootprint,
     fountainPadR,
     inset,
     loopHalfW,
@@ -180,10 +187,30 @@ function buildNorthLayout(pathCx: number, pathW: number): GardenNorthLayout {
       },
     ],
     benches: [
-      { x: cx, y: cy - benchDist, rotationY: 0, scale: 1 },
-      { x: cx, y: cy + benchDist, rotationY: Math.PI, scale: 1 },
-      { x: cx - benchDist, y: cy, rotationY: Math.PI / 2, scale: 1 },
-      { x: cx + benchDist, y: cy, rotationY: -Math.PI / 2, scale: 1 },
+      {
+        x: cx,
+        y: cy - benchDist,
+        rotationY: benchYawToward(cx, cy, cx, cy - benchDist),
+        scale: 1,
+      },
+      {
+        x: cx,
+        y: cy + benchDist,
+        rotationY: benchYawToward(cx, cy, cx, cy + benchDist),
+        scale: 1,
+      },
+      {
+        x: cx - benchDist,
+        y: cy,
+        rotationY: benchYawToward(cx, cy, cx - benchDist, cy),
+        scale: 1,
+      },
+      {
+        x: cx + benchDist,
+        y: cy,
+        rotationY: benchYawToward(cx, cy, cx + benchDist, cy),
+        scale: 1,
+      },
     ],
     lamps: [
       ...quad(cx, cy, loopHalfW + 0.55, loopHalfD + 0.45, 0, 1),
@@ -196,12 +223,7 @@ function buildNorthLayout(pathCx: number, pathW: number): GardenNorthLayout {
       ...pairX(cx, potSpread, minY + edgeInset, 0, 0.96),
       { x: cx, y: minY + edgeInset, rotationY: Math.PI / 2, scale: 1.0 },
     ],
-    bushes: [
-      ...quad(cx, cy, bushInnerX, bushInnerY, 0.4, 1.35),
-      ...quad(cx, cy, loopCornerX - 0.9, loopCornerY - 0.85, 0.8, 1.3),
-      ...pairX(cx, edgeX, minY + edgeInset, 0.5, 1.28),
-      ...pairX(cx, edgeX, maxY - edgeInset, 2.1, 1.28),
-    ],
+    bushes: [],
     trees: [
       ...pairX(cx, treeX, maxY - 3, 0.5, 1.0),
       ...pairX(cx, treeX, minY + 5.5, 1.1, 0.92),
@@ -220,37 +242,40 @@ function buildEastLayout(
   const southLoopY = north.cy - north.loopHalfD;
   const spineLen = maxY - roadY - 2.5;
   const spineCy = roadY + 1.2 + spineLen / 2;
-  const stripHalf = (eastX - wallX) / 2 - 1.1;
-  const benchOffset = pathW * 0.5 + 1.45;
+  const stripHalf = (eastX - wallX) / 2 - 2.5;
+  const benchOffset = pathW * 0.9;
 
   const lamps: Placement2D[] = [];
   const pots: Placement2D[] = [];
-  const bushes: Placement2D[] = [];
   const benches: Placement2D[] = [];
   const crossPaths: PathSlab[] = [];
   const step = 7.5;
   let n = 0;
   for (let y = roadY + 4.5; y <= maxY - 3; y += step) {
     lamps.push(
-      { x: wallX + 1.35, y, rotationY: Math.PI / 2, scale: 1 },
-      { x: eastX - 1.35, y, rotationY: -Math.PI / 2, scale: 1 },
+      { x: wallX + 1, y, rotationY: Math.PI / 2, scale: 1.2 },
+      { x: eastX - 0.3, y, rotationY: -Math.PI / 2, scale: 1.2 },
     );
     if (y < maxY - 5) {
       pots.push(
-        { x: pathCx - stripHalf * 0.55, y: y + 0.6, rotationY: n * 0.5, scale: 0.98 },
-        { x: pathCx + stripHalf * 0.55, y: y + 0.6, rotationY: n * 0.5 + Math.PI, scale: 0.98 },
-      );
-    }
-    if (y <= joinY + 6 && y < southLoopY - 4) {
-      bushes.push(
-        { x: pathCx - stripHalf * 0.62, y, rotationY: n * 0.4, scale: 1.3 },
-        { x: pathCx + stripHalf * 0.62, y, rotationY: n * 0.4 + Math.PI, scale: 1.3 },
+        { x: pathCx - stripHalf * 0.55, y: y + 0.6, rotationY: n * 0.5, scale: 0.5 },
+        { x: pathCx + stripHalf * 0.55, y: y + 0.6, rotationY: n * 0.5 + Math.PI, scale: 0.5 },
       );
     }
     if (y >= roadY + 10 && y <= roadY + 28) {
       benches.push(
-        { x: pathCx - benchOffset, y, rotationY: Math.PI / 2, scale: 1 },
-        { x: pathCx + benchOffset, y, rotationY: -Math.PI / 2, scale: 1 },
+        {
+          x: pathCx - benchOffset,
+          y,
+          rotationY: benchYawToward(pathCx, y, pathCx - benchOffset, y),
+          scale: 1.3,
+        },
+        {
+          x: pathCx + benchOffset,
+          y,
+          rotationY: benchYawToward(pathCx, y, pathCx + benchOffset, y),
+          scale: 1.3,
+        },
       );
     }
     n++;
@@ -285,11 +310,7 @@ function buildEastLayout(
     benches,
     lamps,
     pots,
-    bushes: [
-      ...bushes,
-      offset(wallX + 1.8, roadY + 2.2, 0, 0.9, 0),
-      offset(eastX - 1.8, roadY + 2.2, 0, 0.9, Math.PI),
-    ],
+    bushes: [],
     palms: [],
     trees: [],
     flowerBeds: [
@@ -303,7 +324,7 @@ function buildEastLayout(
 
 export function buildGardenLayout(_polygon: PolygonRing): GardenLayout {
   const pathCx = EAST.wallX + (EAST.eastX - EAST.wallX) * 0.52;
-  const pathW = 1.55;
+  const pathW = 2;
   const north = buildNorthLayout(pathCx, pathW);
   const east = buildEastLayout(north, pathCx, pathW);
   const footprintW = NORTH.lawnEastX - NORTH.minX;

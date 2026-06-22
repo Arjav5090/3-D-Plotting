@@ -16,7 +16,6 @@ import {
 } from "@/rendering/materials/colors";
 import { EdgeDimensionLabels } from "@/rendering/labels/EdgeDimensionLabels";
 import { openSpaceEdgePlacements } from "@/rendering/labels/edgeDimensions";
-import { PolygonBorderLoop } from "@/rendering/objects/PolygonBorderLoop";
 import { useSelectionStore } from "@/store/useSelectionStore";
 
 interface OpenSpaceMeshProps {
@@ -104,7 +103,6 @@ export function OpenSpaceMesh({ openSpace }: OpenSpaceMeshProps) {
     };
   }, [openSpace.id]);
 
-  const borderY = DEPTH + 0.035;
   const labelY3 = DEPTH + 0.1;
 
   return (
@@ -135,8 +133,6 @@ export function OpenSpaceMesh({ openSpace }: OpenSpaceMeshProps) {
           />
         )}
       </mesh>
-
-      <PolygonBorderLoop polygon={openSpace.polygon} y={borderY} />
 
       <EdgeDimensionLabels
         placements={edgeLabels}

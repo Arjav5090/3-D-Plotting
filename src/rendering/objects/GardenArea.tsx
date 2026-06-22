@@ -2,10 +2,11 @@
 
 /**
  * SUDA Garden — L-shaped lawn (north plaza + east boulevard to main road).
- * Fountain plaza, winding paths, lamps, pots, bushes, palms, and flower beds.
+ * Fountain plaza, winding paths, lamps, pots, palms, and flower beds.
  */
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
+import { Billboard, Text } from "@react-three/drei";
 import type { PolygonRing } from "@/domain/types/site";
 import { createGroundCapGeometryWithHoles } from "@/generation/geometry";
 import { buildGardenLayout, type PathSlab } from "@/generation/gardenLayout";
@@ -21,7 +22,10 @@ interface GardenAreaProps {
 const noRaycast = () => null;
 const GRASS_Y = 0.11;
 const PATH_Y = 0.15;
+const PATH_TOP_Y = PATH_Y + 0.03;
 const PLAZA_Y = 0.13;
+/** Garden props sit on path / lawn — not site y=0. */
+const GARDEN_PROP_Y = PATH_TOP_Y + 0.01;
 
 function PathSlabMesh({ slab }: { slab: PathSlab }) {
   return (
@@ -64,10 +68,6 @@ export function GardenArea({ polygon }: GardenAreaProps) {
     () => [...north.pots, ...east.pots],
     [north.pots, east.pots],
   );
-  const allBushes = useMemo(
-    () => [...north.bushes, ...east.bushes],
-    [north.bushes, east.bushes],
-  );
   const allBenches = useMemo(
     () => [...north.benches, ...east.benches],
     [north.benches, east.benches],
@@ -85,6 +85,10 @@ export function GardenArea({ polygon }: GardenAreaProps) {
   const entrancePlazaCy = east.roadY + 2.1;
   const junctionY = north.cy - north.loopHalfD;
   const junctionCx = east.pathCx;
+
+  // Open northwest lawn — visible from master / gate views.
+  const titleX = north.minX + north.W * 0.22;
+  const titleY = north.maxY - 4.2;
 
   return (
     <group name="suda-garden">
@@ -137,16 +141,40 @@ export function GardenArea({ polygon }: GardenAreaProps) {
 
       <GlbProp
         url={ASSETS.fountain}
-        position={[north.cx, PLAZA_Y + 0.06, -north.cy]}
-        targetHeight={north.fountainR * 2.2}
+        position={[north.cx, PLAZA_Y + 0.08, -north.cy]}
+        targetFootprint={north.fountainFootprint}
       />
 
-      <InstancedGlb url={ASSETS.lowPolyPot} placements={allPots} targetFootprint={0.95} />
-      <InstancedGlb url={ASSETS.greenBush} placements={allBushes} targetFootprint={1.45} />
-      <InstancedGlb url={ASSETS.bench} placements={allBenches} targetFootprint={1.5} />
-      <InstancedGlb url={ASSETS.lampPost} placements={allLamps} targetHeight={3.0} />
-      <InstancedGlb url={ASSETS.gardenTree} placements={allTrees} targetHeight={5.5} />
-      <InstancedGlb url={ASSETS.flowerBed} placements={allFlowerBeds} targetFootprint={2.2} />
+      <InstancedGlb url={ASSETS.lowPolyPot} placements={allPots} targetFootprint={0.95} surfaceY={GARDEN_PROP_Y} />
+      <InstancedGlb url={ASSETS.bench} placements={allBenches} targetFootprint={1.5} surfaceY={GARDEN_PROP_Y} />
+      <InstancedGlb url={ASSETS.lampPost} placements={allLamps} targetHeight={3.0} surfaceY={GARDEN_PROP_Y} />
+      <InstancedGlb url={ASSETS.gardenTree} placements={allTrees} targetHeight={5.5} surfaceY={GARDEN_PROP_Y} />
+      <InstancedGlb url={ASSETS.flowerBed} placements={allFlowerBeds} targetFootprint={2.2} surfaceY={GARDEN_PROP_Y} />
+
+      <Billboard
+        position={[titleX + 9 , GRASS_Y + 0.55, -titleY + 12]}
+        follow
+        lockX={false}
+        lockY={false}
+        lockZ={false}
+      >
+        <Text
+          fontSize={1.4}
+          color="#1a3d28"
+          anchorX="center"
+          anchorY="middle"
+          letterSpacing={0.12}
+          outlineWidth={0.12}
+          outlineColor="#f4f8ee"
+          outlineOpacity={0.95}
+          renderOrder={20}
+          material-depthTest={false}
+          material-toneMapped={false}
+          raycast={noRaycast}
+        >
+          SUDA GARDEN
+        </Text>
+      </Billboard>
     </group>
   );
 }
