@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { PlotStatus } from "@/domain/types/site";
 import { useSiteData } from "@/data/loaders/useSiteData";
 import { useSelectionStore } from "@/store/useSelectionStore";
+import { ContactCtas } from "@/ui/ContactCtas";
 
 const STATUS_META: Record<PlotStatus, { label: string; dot: string; text: string }> = {
   available: { label: "Available", dot: "bg-emerald-500", text: "text-emerald-700" },
@@ -46,7 +47,7 @@ export function PlotInfoCard() {
           transition={{ type: "spring", stiffness: 380, damping: 30, mass: 0.8 }}
           className="plot-info-card pointer-events-auto fixed z-40"
         >
-          <div className="plot-info-card__panel overflow-hidden rounded-2xl border border-white/50 bg-white/85 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl">
+          <div className="plot-info-card__panel overflow-hidden rounded-2xl border border-white/50 bg-white/95 shadow-2xl ring-1 ring-black/5 md:bg-white/70 md:backdrop-blur-xl">
             <div className="flex items-start justify-between gap-2 px-4 pt-3 sm:gap-3 sm:px-5 sm:pt-4">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[10px] font-medium uppercase tracking-[0.14em] text-slate-500 sm:text-[11px] sm:tracking-[0.18em]">
@@ -94,12 +95,9 @@ export function PlotInfoCard() {
                   </span>
                 </div>
 
-                <button
-                  disabled={status === "sold"}
-                  className="mt-3 w-full rounded-xl bg-slate-900 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300 sm:mt-4"
-                >
-                  {status === "sold" ? "Sold Out" : "Schedule Site Visit"}
-                </button>
+                <div className="mt-3 sm:mt-4">
+                  <ContactCtas />
+                </div>
               </div>
             )}
 
@@ -108,6 +106,9 @@ export function PlotInfoCard() {
                 <Row label="Size" value={openSpace.size ?? "—"} />
                 <div className="mt-2">
                   <Row label="Area" value={`${openSpace.area ?? "—"} sq ft`} />
+                </div>
+                <div className="mt-3 sm:mt-4">
+                  <ContactCtas />
                 </div>
               </div>
             )}

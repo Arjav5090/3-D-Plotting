@@ -7,6 +7,7 @@
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { PlotInfoCard } from "@/ui/PlotInfoCard";
+import { FloatingContactCtas } from "@/ui/ContactCtas";
 import { CameraControls } from "@/ui/CameraControls";
 import { BrandHeader } from "@/ui/BrandHeader";
 import { CompassRose } from "@/ui/CompassRose";
@@ -45,6 +46,7 @@ export default function Home() {
         <CompassRose />
         <LoadingOverlay />
         <PlotInfoCard />
+        <FloatingContactCtas />
         <CameraControls />
       </div>
     </main>

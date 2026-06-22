@@ -7,11 +7,18 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
+import {
+  MAIN_ROAD_DRIVE_EAST,
+  MAIN_ROAD_DRIVE_WEST,
+  MAIN_ROAD_LANE_A_Y,
+  MAIN_ROAD_LANE_B_Y,
+} from "@/generation/roadGeometry";
 import { ASSETS } from "@/rendering/models/assetPaths";
 
 const noRaycast = () => null;
 const CAR_URLS = [ASSETS.carSedan, ASSETS.carSuv, ASSETS.carHatch] as const;
 const CAR_LENGTH = 4.4;
+const ROAD_SURFACE_Y = 0.025;
 
 function useAlignedCar(url: string, length = CAR_LENGTH) {
   const { scene } = useGLTF(url);
@@ -72,7 +79,7 @@ interface Parked {
 
 interface Mover {
   startX: number;
-  z: number;
+  siteY: number;
   speed: number;
   dir: 1 | -1;
   variant: number;
@@ -89,26 +96,39 @@ export function Cars() {
 
   const movers = useMemo<Mover[]>(
     () => [
-      { startX: -22, z: 6, speed: 7, dir: 1, variant: 0 },
-      { startX: 24, z: 14, speed: 6.5, dir: -1, variant: 2 },
+      {
+        startX: MAIN_ROAD_DRIVE_WEST,
+        siteY: MAIN_ROAD_LANE_A_Y,
+        speed: 7,
+        dir: 1,
+        variant: 0,
+      },
+      {
+        startX: MAIN_ROAD_DRIVE_EAST,
+        siteY: MAIN_ROAD_LANE_B_Y,
+        speed: 6.5,
+        dir: -1,
+        variant: 2,
+      },
     ],
     [],
   );
 
   const moverRefs = useRef<(THREE.Group | null)[]>([]);
   const moverX = useRef(movers.map((m) => m.startX));
-  const MIN_X = -26;
-  const MAX_X = 40;
 
   useFrame((_, dt) => {
     const step = Math.min(dt, 0.05);
     movers.forEach((m, i) => {
       let x = moverX.current[i] + m.speed * step * m.dir;
-      if (x > MAX_X) x = MIN_X;
-      if (x < MIN_X) x = MAX_X;
+      if (x > MAIN_ROAD_DRIVE_EAST) x = MAIN_ROAD_DRIVE_WEST;
+      if (x < MAIN_ROAD_DRIVE_WEST) x = MAIN_ROAD_DRIVE_EAST;
       moverX.current[i] = x;
       const g = moverRefs.current[i];
-      if (g) g.position.x = x;
+      if (g) {
+        g.position.x = x;
+        g.position.y = ROAD_SURFACE_Y;
+      }
     });
   });
 
@@ -130,7 +150,7 @@ export function Cars() {
           ref={(el) => {
             moverRefs.current[i] = el;
           }}
-          position={[m.startX, 0, m.z]}
+          position={[m.startX, ROAD_SURFACE_Y, -m.siteY]}
           rotation={[0, m.dir === 1 ? 0 : Math.PI, 0]}
         >
           <GlbCar url={CAR_URLS[m.variant % 3]} />

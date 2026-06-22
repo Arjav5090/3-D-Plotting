@@ -11,6 +11,8 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { SiteRenderer } from "@/rendering/scene/SiteRenderer";
 import { LoadingBridge } from "@/rendering/LoadingBridge";
+import { AdaptiveQuality } from "@/rendering/quality/AdaptiveQuality";
+import { canvasDprRange } from "@/rendering/quality/renderQuality";
 import "@/rendering/models/assetPaths";
 import { useSelectionStore } from "@/store/useSelectionStore";
 import { useViewStore } from "@/store/useViewStore";
@@ -25,26 +27,28 @@ function handleMissed() {
 }
 
 export function SiteViewer() {
-  const { isMobile, isLowPower } = useViewportProfile();
+  const { isMobile } = useViewportProfile();
 
   return (
     <Canvas
       className="absolute inset-0 touch-none"
-      shadows={!isLowPower}
-      dpr={isLowPower ? [1, 1.25] : [1, 2]}
+      shadows={!isMobile}
+      dpr={canvasDprRange()}
+      performance={{ min: 0.5, max: 1 }}
       gl={{
-        antialias: !isLowPower,
+        antialias: true,
         alpha: true,
         powerPreference: "high-performance",
         toneMapping: ACESFilmicToneMapping,
-        toneMappingExposure: 1.05,
+        toneMappingExposure: isMobile ? 1.02 : 1.06,
       }}
       camera={{ fov: isMobile ? 48 : 45, position: [60, 60, 60], near: 0.1, far: 5000 }}
       onPointerMissed={handleMissed}
     >
+      <AdaptiveQuality />
       <LoadingBridge />
       <Suspense fallback={null}>
-        <SiteRenderer lowPower={isLowPower} />
+        <SiteRenderer />
       </Suspense>
       <OrbitControls
         makeDefault

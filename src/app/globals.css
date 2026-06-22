@@ -15,9 +15,9 @@ body {
 :root {
   --app-bg-gradient: linear-gradient(
     to bottom,
-    #6b8496 0%,
+    #6e8898 0%,
     #8fa3b0 42%,
-    #b4c4ce 100%
+    #b8c8d2 100%
   );
   --header-h: 3.75rem;
   --bottom-chrome: 6.25rem;

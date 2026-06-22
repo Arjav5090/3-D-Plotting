@@ -5,12 +5,10 @@ import { useEffect, useState } from "react";
 export interface ViewportProfile {
   width: number;
   height: number;
-  /** Phone / small touch viewport. */
+  /** Phone / small touch viewport — layout and touch controls only. */
   isMobile: boolean;
   /** Narrow portrait layout. */
   isPortrait: boolean;
-  /** Reduced GPU settings for smooth touch interaction. */
-  isLowPower: boolean;
 }
 
 function readProfile(): ViewportProfile {
@@ -20,7 +18,6 @@ function readProfile(): ViewportProfile {
       height: 844,
       isMobile: true,
       isPortrait: true,
-      isLowPower: true,
     };
   }
 
@@ -29,12 +26,11 @@ function readProfile(): ViewportProfile {
   const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
   const isMobile = width < 768 || (coarsePointer && width < 1024);
   const isPortrait = height > width;
-  const isLowPower = isMobile || width < 900;
 
-  return { width, height, isMobile, isPortrait, isLowPower };
+  return { width, height, isMobile, isPortrait };
 }
 
-/** Tracks viewport size + mobile/touch profile for layout and 3D quality tiers. */
+/** Tracks viewport size for responsive layout (not render quality). */
 export function useViewportProfile(): ViewportProfile {
   const [profile, setProfile] = useState<ViewportProfile>(readProfile);
 

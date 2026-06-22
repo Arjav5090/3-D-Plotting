@@ -12,7 +12,7 @@ export function CompassRose() {
       aria-label="Site orientation compass"
       role="img"
     >
-      <div className="relative flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-white/60 bg-white/85 shadow-md backdrop-blur sm:h-14 sm:w-14">
+      <div className="relative flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-white/60 bg-white/95 shadow-md sm:h-14 sm:w-14 md:bg-white/85 md:backdrop-blur">
         <div
           className="absolute inset-0 transition-transform duration-150 ease-out will-change-transform"
           style={{ transform: `rotate(${headingDeg}deg)` }}

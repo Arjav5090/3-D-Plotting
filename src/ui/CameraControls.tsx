@@ -43,7 +43,7 @@ export function CameraControls() {
 
   return (
     <div className="pointer-events-auto fixed bottom-3 left-1/2 z-20 -translate-x-1/2 safe-bottom sm:bottom-4">
-      <div className="flex max-w-[calc(100vw-1rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-slate-200 bg-white/90 p-1 shadow-lg backdrop-blur sm:max-w-none sm:gap-1">
+      <div className="flex max-w-[calc(100vw-1rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1 shadow-lg md:max-w-none md:gap-1 md:bg-white/90 md:backdrop-blur">
         {MODES.map(({ mode: m, label, icon }) => {
           const active = mode === m;
           const disabled = m === "focus" && !hasSelection;

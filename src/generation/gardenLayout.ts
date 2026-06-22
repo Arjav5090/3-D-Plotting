@@ -291,7 +291,7 @@ function buildEastLayout(
       offset(eastX - 1.8, roadY + 2.2, 0, 0.9, Math.PI),
     ],
     palms: [],
-    trees: pairX(pathCx, stripHalf * 0.55, southLoopY + 3, 2.5, 1.0),
+    trees: [],
     flowerBeds: [
       offset(wallX + 2.8, roadY + 2.6, 0, 0, 0.3),
       offset(eastX - 2.8, roadY + 2.6, 0, 0, -0.3),

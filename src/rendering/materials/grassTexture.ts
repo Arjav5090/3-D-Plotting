@@ -152,6 +152,10 @@ function makeTexture(canvas: HTMLCanvasElement): THREE.CanvasTexture {
   return tex;
 }
 
+function applyGrassAnisotropy(tex: THREE.Texture): void {
+  tex.anisotropy = 16;
+}
+
 export interface GrassMaps {
   map: THREE.CanvasTexture;
   normalMap: THREE.CanvasTexture;
@@ -165,6 +169,8 @@ export function grassMapsForArea(width: number, depth: number): GrassMaps {
   const ry = Math.max(depth / TILE_METRES, 1);
   map.repeat.set(rx, ry);
   normalMap.repeat.set(rx, ry);
+  applyGrassAnisotropy(map);
+  applyGrassAnisotropy(normalMap);
   map.needsUpdate = true;
   normalMap.needsUpdate = true;
   return { map, normalMap };
@@ -176,6 +182,8 @@ export function grassMapsWorldAligned(): GrassMaps {
   const normalMap = getGrassNormalMap().clone();
   map.repeat.set(1, 1);
   normalMap.repeat.set(1, 1);
+  applyGrassAnisotropy(map);
+  applyGrassAnisotropy(normalMap);
   map.needsUpdate = true;
   normalMap.needsUpdate = true;
   return { map, normalMap };

@@ -1,8 +1,17 @@
 import type { Boundary, PolygonRing, Road } from "@/domain/types/site";
 
-const MAIN_ROAD_SOUTH = -19.5;
+export const MAIN_ROAD_WEST = -32;
+export const MAIN_ROAD_EAST = 34;
+export const MAIN_ROAD_SOUTH = -26;
 const LEGACY_MAIN_ROAD_NORTH = -1.5;
 const WALL_OVERLAP = 0.15;
+const CAR_HALF = 2.2;
+
+/** Inner cruise limits — cars stay fully on asphalt when looping. */
+export const MAIN_ROAD_DRIVE_WEST = MAIN_ROAD_WEST + CAR_HALF;
+export const MAIN_ROAD_DRIVE_EAST = MAIN_ROAD_EAST - CAR_HALF;
+export const MAIN_ROAD_LANE_A_Y = -8;
+export const MAIN_ROAD_LANE_B_Y = -16;
 
 /** Full 18 M road footprint flush to the compound south wall / gate. */
 export function extendedMainRoadPolygon(
@@ -33,8 +42,8 @@ export function extendedMainRoadPolygon(
     }
   }
 
-  let westX = -22;
-  let eastX = 28;
+  let westX = MAIN_ROAD_WEST;
+  let eastX = MAIN_ROAD_EAST;
   for (const [x] of road.polygon) {
     if (x < westX) westX = x;
     if (x > eastX) eastX = x;
@@ -91,12 +100,12 @@ export function gateApronPolygon(
   const [wex, wey] = wallEast;
 
   return [
-    [-22, LEGACY_MAIN_ROAD_NORTH],
-    [28, LEGACY_MAIN_ROAD_NORTH],
-    [28, wey + WALL_OVERLAP],
+    [MAIN_ROAD_WEST, LEGACY_MAIN_ROAD_NORTH],
+    [MAIN_ROAD_EAST, LEGACY_MAIN_ROAD_NORTH],
+    [MAIN_ROAD_EAST, wey + WALL_OVERLAP],
     [wex, wey + WALL_OVERLAP],
     [gex, WALL_OVERLAP],
     [gwx, WALL_OVERLAP],
-    [-22, WALL_OVERLAP],
+    [MAIN_ROAD_WEST, WALL_OVERLAP],
   ];
 }

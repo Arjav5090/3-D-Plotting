@@ -2,7 +2,6 @@
 import { useGLTF } from "@react-three/drei";
 
 export const ASSETS = {
-  wall: "/models/required/01-stone_wall_scan/lowpoly_stone_wall.glb",
   avenueTree: "/models/required/03-old_tree/plant_series__palm_tree.glb",
   fountain: "/models/required/12-fountain/fountain_water_simulation.glb",
   bench: "/models/required/13-bench/bench.glb",

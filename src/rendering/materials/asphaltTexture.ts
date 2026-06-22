@@ -14,7 +14,7 @@ function buildAsphaltData(): ImageData {
     for (let x = 0; x < SIZE; x++) {
       const n = fbm(x, y, 4);
       const grain = hash(x * 0.73 + y * 0.19) * 0.12;
-      const v = 42 + n * 28 + grain * 40;
+      const v = 132 + n * 20 + grain * 14;
       const i = (y * SIZE + x) * 4;
       data[i] = v;
       data[i + 1] = v + 1;

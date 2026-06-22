@@ -22,7 +22,6 @@ import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import type { Boundary } from "@/domain/types/site";
-import { ASSETS } from "@/rendering/models/assetPaths";
 import {
   extractParts,
   moduleBounds,
@@ -41,7 +40,7 @@ interface BoundaryWallSystemProps {
   thickness?: number;
 }
 
-const DEFAULT_MODEL = ASSETS.wall;
+const DEFAULT_MODEL = "/models/required/01-stone_wall_scan/lowpoly_stone_wall.glb";
 const X_AXIS = new THREE.Vector3(1, 0, 0);
 
 export function BoundaryWallSystem({

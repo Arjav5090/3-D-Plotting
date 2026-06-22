@@ -24,7 +24,7 @@ export function ShadowCatcher({ size }: ShadowCatcherProps) {
       raycast={() => null}
     >
       <planeGeometry args={[extent, extent]} />
-      <shadowMaterial transparent opacity={0.18} />
+      <shadowMaterial transparent opacity={0.15} />
     </mesh>
   );
 }

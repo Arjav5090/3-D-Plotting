@@ -1,7 +1,7 @@
 /** Centralized palette so colors are tweakable in one place. */
 
 export const PALETTE = {
-  road: "#3a3a3e",
+  road: "#aeb4bc",
   roadMarking: "#f5f7fa",
   curb: "#f2f0ec",
   curbTop: "#ffffff",

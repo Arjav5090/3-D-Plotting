@@ -21,7 +21,7 @@ import { RoadGateApron } from "@/rendering/objects/RoadGateApron";
 import { RoadMarkings } from "@/rendering/objects/RoadMarkings";
 import { Curbs } from "@/rendering/objects/Curbs";
 import { BoundaryMesh } from "@/rendering/objects/BoundaryMesh";
-import { BoundaryWallSystem } from "@/rendering/objects/BoundaryWallSystem";
+import { SandstoneBoundaryWall } from "@/rendering/objects/SandstoneBoundaryWall";
 import { EntranceGate } from "@/rendering/objects/EntranceGate";
 import { GardenArea } from "@/rendering/objects/GardenArea";
 import { Trees } from "@/rendering/objects/Trees";
@@ -36,7 +36,7 @@ import { CompassSync } from "@/rendering/camera/CompassSync";
 import { PALETTE } from "@/rendering/materials/colors";
 import { useViewportProfile } from "@/hooks/useViewportProfile";
 
-export function SiteRenderer({ lowPower = false }: { lowPower?: boolean }) {
+export function SiteRenderer() {
   const { data } = useSiteData();
   const { isMobile } = useViewportProfile();
 
@@ -86,9 +86,13 @@ export function SiteRenderer({ lowPower = false }: { lowPower?: boolean }) {
 
   return (
     <>
-      <Lighting radius={radius} lowPower={lowPower} />
+      <Lighting radius={radius} mobileGpu={isMobile} />
       {/* HDRI used for soft reflections/IBL only — never shown as a sky. */}
-      <Environment preset="park" background={false} />
+      <Environment
+        preset="park"
+        background={false}
+        environmentIntensity={isMobile ? 0.72 : 1.05}
+      />
       <ShadowCatcher size={bounds.size} />
       <CameraController
         bounds={bounds}
@@ -147,7 +151,7 @@ export function SiteRenderer({ lowPower = false }: { lowPower?: boolean }) {
           .filter((b) => b.kind !== "gate")
           .map((b) =>
             b.kind === "wall" ? (
-              <BoundaryWallSystem key={b.id} boundary={b} />
+              <SandstoneBoundaryWall key={b.id} boundary={b} defaults={data.defaults} />
             ) : (
               <BoundaryMesh key={b.id} boundary={b} defaults={data.defaults} />
             ),
