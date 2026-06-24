@@ -32,8 +32,8 @@ const MODES: ModeButton[] = [
 const ICON_CLASS = "h-4 w-4 shrink-0";
 
 export function CameraControls() {
-  const mode = useViewStore((s) => s.mode);
-  const setMode = useViewStore((s) => s.setMode);
+  const activePreset = useViewStore((s) => s.activePreset);
+  const goToPreset = useViewStore((s) => s.goToPreset);
   const reset = useViewStore((s) => s.reset);
   const statusActive = useStatusViewStore((s) => s.active);
   const toggleStatus = useStatusViewStore((s) => s.toggle);
@@ -44,12 +44,12 @@ export function CameraControls() {
       <div className="pointer-events-auto fixed bottom-3 left-1/2 z-20 -translate-x-1/2 safe-bottom sm:bottom-4">
         <div className="flex max-w-[calc(100vw-1rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-slate-200 bg-white/95 p-1 shadow-lg md:max-w-none md:gap-1 md:bg-white/90 md:backdrop-blur">
           {MODES.map(({ mode: m, label, icon }) => {
-            const active = mode === m;
+            const active = activePreset === m;
             return (
               <button
                 key={m}
                 type="button"
-                onClick={() => setMode(m)}
+                onClick={() => goToPreset(m)}
                 aria-pressed={active}
                 aria-label={label}
                 className={toolbarBtn(active)}

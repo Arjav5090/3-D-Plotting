@@ -3,28 +3,36 @@
 /**
  * Camera preset state.
  *
- * The CameraController reads `mode` (and a `resetNonce`) and smoothly animates
- * the camera toward the matching cinematic pose. Keeping this in a store lets
- * the DOM control bar and the in-canvas controller stay in sync.
+ * The CameraController animates only when `presetNonce` bumps (explicit preset
+ * click or Reset). `activePreset` drives toolbar highlighting only.
  */
 import { create } from "zustand";
 
 export type ViewMode = "master" | "gate";
 
 export interface ViewState {
-  mode: ViewMode;
-  /** Bumping this re-triggers a move even if the mode is unchanged (Reset). */
-  resetNonce: number;
+  /** Highlights the last-selected preset in the toolbar. */
+  activePreset: ViewMode;
+  /** Bumping this triggers a one-shot camera animation. */
+  presetNonce: number;
 
-  setMode: (mode: ViewMode) => void;
+  goToPreset: (mode: ViewMode) => void;
   /** Return to the master plan view and force a re-fit. */
   reset: () => void;
 }
 
 export const useViewStore = create<ViewState>((set) => ({
-  mode: "master",
-  resetNonce: 0,
+  activePreset: "master",
+  presetNonce: 0,
 
-  setMode: (mode) => set({ mode }),
-  reset: () => set((s) => ({ mode: "master", resetNonce: s.resetNonce + 1 })),
+  goToPreset: (mode) =>
+    set((s) => ({
+      activePreset: mode,
+      presetNonce: s.presetNonce + 1,
+    })),
+  reset: () =>
+    set((s) => ({
+      activePreset: "master",
+      presetNonce: s.presetNonce + 1,
+    })),
 }));

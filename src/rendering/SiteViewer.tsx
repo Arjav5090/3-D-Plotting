@@ -12,6 +12,7 @@ import { OrbitControls } from "@react-three/drei";
 import { SiteRenderer } from "@/rendering/scene/SiteRenderer";
 import { LoadingBridge } from "@/rendering/LoadingBridge";
 import { AdaptiveQuality } from "@/rendering/quality/AdaptiveQuality";
+import { OrbitZoomBridge } from "@/rendering/camera/OrbitZoomBridge";
 import { canvasDprRange } from "@/rendering/quality/renderQuality";
 import "@/rendering/models/assetPaths";
 import { useSelectionStore } from "@/store/useSelectionStore";
@@ -42,6 +43,7 @@ export function SiteViewer() {
       onPointerMissed={handleMissed}
     >
       <AdaptiveQuality />
+      <OrbitZoomBridge />
       <LoadingBridge />
       <Suspense fallback={null}>
         <SiteRenderer />

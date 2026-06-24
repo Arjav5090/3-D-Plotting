@@ -1,8 +1,13 @@
 "use client";
 
-import { Text } from "@react-three/drei";
+import {
+  PLOT_NUMBER_LIFT,
+  PlotBillboardLabel,
+} from "@/rendering/labels/PlotBillboardLabel";
 
-const noRaycast = () => null;
+/** Plot numbers render smaller than edge dimensions. */
+const NUMBER_SIZE_FACTOR = 0.68;
+const NUMBER_SCALE_FACTOR = 0.72;
 
 interface SurfaceSizeLabelsProps {
   x: number;
@@ -13,7 +18,7 @@ interface SurfaceSizeLabelsProps {
   titleColor?: string;
 }
 
-/** Plot number centred on the parcel — sized to avoid edge-dimension overlap. */
+/** Plot number centred on the parcel — billboarded for all viewing angles. */
 export function SurfaceSizeLabels({
   x,
   siteY,
@@ -23,22 +28,18 @@ export function SurfaceSizeLabels({
   titleColor = "#ffffff",
 }: SurfaceSizeLabelsProps) {
   return (
-    <Text
-      position={[x, surfaceY, -siteY]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      fontSize={titleSize}
+    <PlotBillboardLabel
+      position={[x, surfaceY + PLOT_NUMBER_LIFT, -siteY]}
+      fontSize={titleSize * NUMBER_SIZE_FACTOR}
       color={titleColor}
-      anchorX="center"
-      anchorY="middle"
-      outlineWidth={0.06}
+      outlineWidth={0.05}
       outlineColor="#2d4a22"
       outlineOpacity={0.9}
       renderOrder={25}
-      material-depthTest={false}
-      material-toneMapped={false}
-      raycast={noRaycast}
+      anchorY="bottom"
+      scaleFactor={NUMBER_SCALE_FACTOR}
     >
       {title}
-    </Text>
+    </PlotBillboardLabel>
   );
 }

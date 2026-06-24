@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { PlotInfoCard } from "@/ui/PlotInfoCard";
 import { FloatingContactCtas } from "@/ui/ContactCtas";
 import { CameraControls } from "@/ui/CameraControls";
+import { ZoomControls } from "@/ui/ZoomControls";
 import { StatusLegend } from "@/ui/StatusLegend";
 import { BrandHeader } from "@/ui/BrandHeader";
 import { CompassRose } from "@/ui/CompassRose";
@@ -50,6 +51,7 @@ export default function Home() {
         <FloatingContactCtas />
         <StatusLegend />
         <CameraControls />
+        <ZoomControls />
       </div>
     </main>
   );

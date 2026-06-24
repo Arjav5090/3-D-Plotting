@@ -6,8 +6,8 @@
  *   - "master" : elevated angled overview — user keeps full orbit control after arrival
  *   - "gate"   : low approach shot of the entrance gate from the front road
  *
- * On a mode/reset change the camera + OrbitControls target lerp toward the pose;
- * once arrived animation stops so manual pan / zoom / rotate take over.
+ * Animates only when `presetNonce` bumps (explicit preset click or Reset).
+ * Once arrived, animation stops so manual pan / zoom / rotate take over.
  */
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -18,8 +18,7 @@ import { useViewStore } from "@/store/useViewStore";
 import { useViewportProfile } from "@/hooks/useViewportProfile";
 import { fitDistance } from "@/rendering/camera/cameraFit";
 
-const useViewStoreMode = () => useViewStore((s) => s.mode);
-const useViewStoreNonce = () => useViewStore((s) => s.resetNonce);
+const useViewStoreNonce = () => useViewStore((s) => s.presetNonce);
 
 export interface Landmarks {
   /** Gate center in site coords. */
@@ -40,8 +39,7 @@ export function CameraController({ bounds, landmarks }: CameraControllerProps) {
   const controls = useThree((s) => s.controls) as OrbitControlsImpl | null;
   const { isMobile, isPortrait } = useViewportProfile();
 
-  const mode = useViewStoreMode();
-  const resetNonce = useViewStoreNonce();
+  const presetNonce = useViewStoreNonce();
 
   const desiredPos = useRef(new THREE.Vector3());
   const desiredTarget = useRef(new THREE.Vector3());
@@ -57,6 +55,7 @@ export function CameraController({ bounds, landmarks }: CameraControllerProps) {
   useEffect(() => {
     if (!(camera instanceof THREE.PerspectiveCamera)) return;
 
+    const mode = useViewStore.getState().activePreset;
     const fov = (camera.fov * Math.PI) / 180;
     const [w, d] = bounds.size;
     const maxDim = Math.max(w, d, 1);
@@ -95,18 +94,8 @@ export function CameraController({ bounds, landmarks }: CameraControllerProps) {
     camera.near = Math.max(0.1, dist / 200);
     camera.far = dist * 20 + maxDim * 4;
     camera.updateProjectionMatrix();
-  }, [
-    camera,
-    bounds,
-    mode,
-    resetNonce,
-    landmarks,
-    toWorld,
-    size.width,
-    size.height,
-    isMobile,
-    isPortrait,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- animate only on explicit preset request
+  }, [camera, bounds, presetNonce, landmarks, toWorld]);
 
   useFrame((_, delta) => {
     if (!animating.current || !controls) return;

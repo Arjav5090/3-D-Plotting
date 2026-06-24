@@ -1,7 +1,10 @@
 "use client";
 
-import { Text } from "@react-three/drei";
 import type { EdgeLabelPlacement } from "@/rendering/labels/edgeDimensions";
+import {
+  PLOT_LABEL_LIFT,
+  PlotBillboardLabel,
+} from "@/rendering/labels/PlotBillboardLabel";
 
 const noRaycast = () => null;
 
@@ -12,40 +15,28 @@ interface EdgeDimensionLabelsProps {
   outlineWidth?: number;
 }
 
-/** Dimension strings along parcel edges — tidy, top-down readable. */
+/** Dimension strings along parcel edges — billboarded for all viewing angles. */
 export function EdgeDimensionLabels({
   placements,
   surfaceY,
   color = "#2a2a2a",
   outlineWidth = 0.035,
 }: EdgeDimensionLabelsProps) {
+  const labelY = surfaceY + PLOT_LABEL_LIFT;
+
   return (
     <group raycast={noRaycast}>
       {placements.map((p, i) => (
-        <group
+        <PlotBillboardLabel
           key={i}
-          position={[p.x, surfaceY, -p.y]}
-          rotation={[0, p.spin, 0]}
+          position={[p.x, labelY, -p.y]}
+          fontSize={p.fontSize}
+          color={color}
+          outlineWidth={outlineWidth}
+          maxWidth={p.maxWidth}
         >
-          <Text
-            rotation={[-Math.PI / 2, 0, 0]}
-            fontSize={p.fontSize}
-            color={color}
-            anchorX="center"
-            anchorY="middle"
-            maxWidth={p.maxWidth}
-            letterSpacing={0.02}
-            outlineWidth={outlineWidth}
-            outlineColor="#ffffff"
-            outlineOpacity={0.95}
-            renderOrder={20}
-            material-depthTest={false}
-            material-toneMapped={false}
-            raycast={noRaycast}
-          >
-            {p.text}
-          </Text>
-        </group>
+          {p.text}
+        </PlotBillboardLabel>
       ))}
     </group>
   );
